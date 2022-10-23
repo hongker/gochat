@@ -2,9 +2,11 @@ package application
 
 import (
 	"context"
+	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
 	"sync"
+	"time"
 )
 
 type ChannelApplication struct {
@@ -49,6 +51,24 @@ func (app *ChannelApplication) Leave(ctx context.Context, id string, uid string)
 	}
 
 	app.bucket.UnsubscribeChannel(channel, app.bucket.GetSession(uid))
+	return
+}
+
+func (app *ChannelApplication) Broadcast(ctx context.Context, msg *Message, codec codec.Codec, packet *codec.Packet) (err error) {
+	channel := app.bucket.GetChannel(msg.Target)
+	if channel == nil {
+		return
+	}
+
+	msg.ID = uuid.NewV4().String()
+	msg.CreatedAt = time.Now().UnixMilli()
+
+	buf, err := codec.Pack(packet, msg)
+	if err != nil {
+		return
+	}
+
+	app.bucket.BroadcastChannel(channel, buf)
 	return
 }
 

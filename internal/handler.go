@@ -36,6 +36,7 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateJoinChannel, znet.StandardHandler[api.ChannelJoinRequest, api.ChannelJoinResponse](handler.joinChannel))
 	router.Route(api.OperateLeaveChannel, znet.StandardHandler[api.ChannelLeaveRequest, api.ChannelLeaveResponse](handler.leaveChannel))
 	router.Route(api.OperateCreateChannel, znet.StandardHandler[api.ChannelCreateRequest, api.ChannelCreateResponse](handler.createChannel))
+	router.Route(api.OperateBroadcastChannel, znet.StandardHandler[api.ChannelBroadcastRequest, api.ChannelBroadcastResponse](handler.broadcastChannel))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
@@ -166,6 +167,19 @@ func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinReque
 func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
 	uid, _ := handler.getCurrentUser(ctx)
 	err = handler.channelApp.Leave(ctx, req.ID, uid)
+	return
+}
+
+func (handler *Handler) broadcastChannel(ctx *znet.Context, req *api.ChannelBroadcastRequest) (resp *api.ChannelBroadcastResponse, err error) {
+	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
+
+	uid, _ := handler.getCurrentUser(ctx)
+	err = handler.channelApp.Broadcast(ctx, &application.Message{
+		Content:     req.Content,
+		ContentType: req.ContentType,
+		Target:      req.Target,
+		Sender:      uid,
+	}, codec.Default(), packet)
 	return
 }
 

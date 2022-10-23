@@ -17,7 +17,8 @@ type ClientSuite struct {
 	conn  net.Conn
 	codec codec.Codec
 
-	username string
+	username  string
+	channelID string
 }
 
 func (suite *ClientSuite) SetupTest() {
@@ -29,6 +30,8 @@ func (suite *ClientSuite) SetupTest() {
 	go suite.receive(512)
 
 	suite.login("foo")
+	suite.channelID = "49d5dea5-8fee-4fd0-af09-4939508b2a3c"
+
 }
 
 func (suite *ClientSuite) receive(maxReadBufferSize int) {
@@ -116,6 +119,8 @@ func (suite *ClientSuite) BeforeTest(_, testName string) {
 	if testName == "TestLeaveChannel" {
 		suite.TestJoinChannel()
 		time.Sleep(1 * time.Second)
+	} else if testName == "TestBroadcastChannel" {
+		suite.TestJoinChannel()
 	}
 }
 
@@ -130,7 +135,7 @@ func (suite *ClientSuite) TestCreateChannel() {
 
 func (suite *ClientSuite) TestJoinChannel() {
 	log.Println("TestJoinChannel")
-	msg, err := suite.encode(api.OperateJoinChannel, api.ChannelLeaveRequest{ID: "51965150-3d47-4393-995c-e0e544f65db0"})
+	msg, err := suite.encode(api.OperateJoinChannel, api.ChannelLeaveRequest{ID: suite.channelID})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -140,7 +145,21 @@ func (suite *ClientSuite) TestJoinChannel() {
 
 func (suite *ClientSuite) TestLeaveChannel() {
 	log.Println("TestLeaveChannel")
-	msg, err := suite.encode(api.OperateLeaveChannel, api.ChannelLeaveRequest{ID: "51965150-3d47-4393-995c-e0e544f65db0"})
+	msg, err := suite.encode(api.OperateLeaveChannel, api.ChannelLeaveRequest{ID: suite.channelID})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
+func (suite *ClientSuite) TestBroadcastChannel() {
+	log.Println("TestBroadcastChannel")
+	msg, err := suite.encode(api.OperateBroadcastChannel, api.ChannelBroadcastRequest{
+		Content:     "some message",
+		ContentType: "text",
+		Target:      suite.channelID,
+	})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)

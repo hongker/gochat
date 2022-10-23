@@ -45,3 +45,10 @@ type ChannelLeaveRequest struct {
 	ID string `json:"id"`
 }
 type ChannelLeaveResponse struct{}
+
+type ChannelBroadcastRequest struct {
+	Content     string `json:"content"`
+	ContentType string `json:"content_type"`
+	Target      string `json:"target"`
+}
+type ChannelBroadcastResponse struct{}
