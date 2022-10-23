@@ -12,9 +12,18 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 
 	//ctx, cancel := context.WithCancel(context.Background())
 	//defer cancel()
-	instance := znet.New()
+
+	handler := NewHandler()
+	instance := znet.New(func(options *znet.Options) {
+		options.OnConnect = handler.OnConnect
+		options.OnDisconnect = handler.OnDisconnect
+		options.Middlewares = append(options.Middlewares, handler.CheckLogin)
+	})
+
+	handler.Install(instance.Router())
 
 	instance.ListenTCP(":8081")
+	instance.ListenWebsocket(":8082")
 	if err = instance.Run(stopCh); err != nil {
 		return
 	}
