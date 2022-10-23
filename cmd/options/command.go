@@ -1,17 +1,17 @@
-package internal
+package options
 
 import (
 	"github.com/urfave/cli/v2"
-	"gochat/internal/options"
+	"gochat/internal"
 )
 
 // NewCommand returns a new instance of *cli.App
 func NewCommand(name, usage string) *cli.App {
-	opts := options.NewServerRunOptions()
+	opts := NewServerRunOptions()
 
 	app := &cli.App{
 		Name:    name,
-		Version: Version,
+		Version: internal.Version,
 		Usage:   usage,
 		Flags:   opts.Flags(),
 		Action: func(ctx *cli.Context) error {
@@ -24,10 +24,13 @@ func NewCommand(name, usage string) *cli.App {
 }
 
 // run executes command.
-func run(opts *options.ServerRunOptions) error {
+func run(opts *ServerRunOptions) error {
 	if err := opts.Validate(); err != nil {
 		return err
 	}
 
-	return nil
+	config := internal.DefaultConfig()
+	opts.applyTo(config)
+
+	return config.New().Run()
 }
