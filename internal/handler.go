@@ -5,9 +5,11 @@ import (
 	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
+	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/api"
 	"gochat/internal/application"
+	"gochat/internal/bucket"
 	"sync"
 	"time"
 )
@@ -15,11 +17,16 @@ import (
 type Handler struct {
 	rmw               sync.RWMutex
 	timers            map[string]*time.Timer
+	bucket            *bucket.Bucket
 	heartbeatInterval time.Duration
 	sessionApp        *application.SessionApplication
+	messageApp        *application.MessageApplication
 }
 
 func (handler *Handler) Install(router *znet.Router) {
+	router.OnError(func(ctx *znet.Context, err error) {
+		component.Provider().Logger().Errorf("[%s] error: %v", ctx.Conn().ID(), err)
+	})
 	router.Route(api.OperateLogin, znet.StandardHandler[api.LoginRequest, api.LoginResponse](handler.login))
 	router.Route(api.OperateHeartbeat, znet.StandardHandler[api.HeartbeatRequest, api.HeartbeatResponse](handler.heartbeat))
 	router.Route(api.OperateListSession, znet.StandardHandler[api.SessionListRequest, api.SessionListResponse](handler.listSession))
@@ -79,6 +86,7 @@ func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *a
 	resp = &api.LoginResponse{UID: uuid.NewV4().String()}
 	ctx.Conn().Property().Set("uid", resp.UID)
 	ctx.Conn().Property().Set("username", req.Name)
+	handler.bucket.AddSession(bucket.NewSession(resp.UID, ctx.Conn()))
 	return
 }
 
@@ -113,13 +121,29 @@ func (handler *Handler) listSession(ctx *znet.Context, req *api.SessionListReque
 }
 
 func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendRequest) (resp *api.MessageSendResponse, err error) {
+	uid, err := handler.getCurrentUser(ctx)
+	if err != nil {
+		return
+	}
+	msg := &application.Message{
+		Content:     req.Content,
+		ContentType: req.ContentType,
+		Target:      req.Target,
+		Sender:      uid,
+	}
+
+	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
+	err = handler.messageApp.Send(ctx, msg, codec.Default(), packet)
 	return
 }
 
 func NewHandler() *Handler {
+	b := bucket.NewBucket()
 	return &Handler{
+		bucket:            b,
 		timers:            map[string]*time.Timer{},
 		heartbeatInterval: time.Minute,
 		sessionApp:        application.NewSessionApplication(),
+		messageApp:        application.NewMessageApplication(b),
 	}
 }

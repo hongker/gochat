@@ -22,5 +22,9 @@ type Session struct {
 	Title string `json:"title"`
 }
 
-type MessageSendRequest struct{}
+type MessageSendRequest struct {
+	Content     string `json:"content"`
+	ContentType string `json:"content_type"`
+	Target      string `json:"target"`
+}
 type MessageSendResponse struct{}

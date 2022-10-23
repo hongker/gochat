@@ -5,4 +5,6 @@ const (
 	OperateLogin       = 2
 	OperateListSession = 3
 	OperateSendMessage = 4
+
+	OperatePushMessage = 101
 )

@@ -16,6 +16,8 @@ type ClientSuite struct {
 
 	conn  net.Conn
 	codec codec.Codec
+
+	username string
 }
 
 func (suite *ClientSuite) SetupTest() {
@@ -24,36 +26,33 @@ func (suite *ClientSuite) SetupTest() {
 	suite.conn, err = net.Dial("tcp", "localhost:8081")
 	suite.Nil(err)
 
-	go suite.receive(signal.SetupSignalHandler())
+	go suite.receive(512)
 
-	suite.Login()
+	suite.login("foo")
 }
 
-func (suite *ClientSuite) receive(stop <-chan struct{}) {
+func (suite *ClientSuite) receive(maxReadBufferSize int) {
 	for {
-		select {
-		case <-stop:
-			return
-		default:
-		}
-
-		buf := make([]byte, 512)
+		buf := make([]byte, maxReadBufferSize)
 		n, err := suite.conn.Read(buf)
 		if err != nil {
+			log.Println("read error: ", err)
 			return
 		}
 
 		packet := &codec.Packet{}
 		err = suite.codec.Unpack(packet, buf[:n])
 		if err != nil {
+			log.Println("Unpack failed: ", err)
 			return
 		}
 		log.Printf("receive: operate=%d,seq=%d,body=%s", packet.Header.Operate, packet.Header.Seq, string(packet.Body))
 	}
 }
 
-func (suite *ClientSuite) Login() {
-	msg, err := suite.encode(api.OperateLogin, api.LoginRequest{Name: "foo"})
+func (suite *ClientSuite) login(username string) {
+	log.Println("login")
+	msg, err := suite.encode(api.OperateLogin, api.LoginRequest{Name: username})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -64,8 +63,8 @@ func (suite *ClientSuite) Login() {
 
 	go func() {
 		for {
+			time.Sleep(time.Second * 30)
 			suite.SendHeartbeat()
-			time.Sleep(time.Second * 50)
 		}
 	}()
 
@@ -78,8 +77,6 @@ func (suite *ClientSuite) SendHeartbeat() {
 	n, err := suite.conn.Write(msg)
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
-
-	time.Sleep(time.Second * 5)
 }
 
 func (suite *ClientSuite) TestListSession() {
@@ -89,7 +86,28 @@ func (suite *ClientSuite) TestListSession() {
 	n, err := suite.conn.Write(msg)
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
-	time.Sleep(time.Second * 5)
+}
+
+func (suite *ClientSuite) TestSendMessage() {
+	msg, err := suite.encode(api.OperateSendMessage, api.MessageSendRequest{
+		Content:     "some message",
+		ContentType: "text",
+		Target:      "1d96b25d-62d1-43d1-9ae7-8bca5bb6e59c",
+	})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
+func (suite *ClientSuite) TearDownSuite() {
+	log.Println("TearDownSuite")
+	<-signal.SetupSignalHandler()
+}
+
+func (suite *ClientSuite) AfterTest(_, testName string) {
+	log.Println("after: ", testName)
 }
 
 func (suite *ClientSuite) encode(operate int16, data any) ([]byte, error) {
