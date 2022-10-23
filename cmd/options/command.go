@@ -1,6 +1,7 @@
 package options
 
 import (
+	"github.com/ebar-go/ego/utils/runtime/signal"
 	"github.com/urfave/cli/v2"
 	"gochat/internal"
 )
@@ -32,5 +33,5 @@ func run(opts *ServerRunOptions) error {
 	config := internal.DefaultConfig()
 	opts.applyTo(config)
 
-	return config.New().Run()
+	return config.New().Run(signal.SetupSignalHandler())
 }
