@@ -21,6 +21,7 @@ type Handler struct {
 	heartbeatInterval time.Duration
 	sessionApp        *application.SessionApplication
 	messageApp        *application.MessageApplication
+	channelApp        *application.ChannelApplication
 }
 
 func (handler *Handler) Install(router *znet.Router) {
@@ -31,6 +32,10 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateHeartbeat, znet.StandardHandler[api.HeartbeatRequest, api.HeartbeatResponse](handler.heartbeat))
 	router.Route(api.OperateListSession, znet.StandardHandler[api.SessionListRequest, api.SessionListResponse](handler.listSession))
 	router.Route(api.OperateSendMessage, znet.StandardHandler[api.MessageSendRequest, api.MessageSendResponse](handler.sendMessage))
+
+	router.Route(api.OperateJoinChannel, znet.StandardHandler[api.ChannelJoinRequest, api.ChannelJoinResponse](handler.joinChannel))
+	router.Route(api.OperateLeaveChannel, znet.StandardHandler[api.ChannelLeaveRequest, api.ChannelLeaveResponse](handler.leaveChannel))
+	router.Route(api.OperateCreateChannel, znet.StandardHandler[api.ChannelCreateRequest, api.ChannelCreateResponse](handler.createChannel))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
@@ -137,6 +142,17 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 	return
 }
 
+func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
+	return
+}
+
+func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinRequest) (resp *api.ChannelJoinResponse, err error) {
+	return
+}
+func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
+	return
+}
+
 func NewHandler() *Handler {
 	b := bucket.NewBucket()
 	return &Handler{
@@ -145,5 +161,6 @@ func NewHandler() *Handler {
 		heartbeatInterval: time.Minute,
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(b),
+		channelApp:        application.NewChannelApplication(b),
 	}
 }

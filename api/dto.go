@@ -28,3 +28,20 @@ type MessageSendRequest struct {
 	Target      string `json:"target"`
 }
 type MessageSendResponse struct{}
+
+type ChannelCreateRequest struct {
+	Name string `json:"name"`
+}
+type ChannelCreateResponse struct {
+	ID string
+}
+
+type ChannelJoinRequest struct {
+	ID string `json:"id"`
+}
+type ChannelJoinResponse struct{}
+
+type ChannelLeaveRequest struct {
+	ID string `json:"id"`
+}
+type ChannelLeaveResponse struct{}

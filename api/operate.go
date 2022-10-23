@@ -6,5 +6,9 @@ const (
 	OperateListSession = 3
 	OperateSendMessage = 4
 
+	OperateCreateChannel = 5
+	OperateJoinChannel   = 6
+	OperateLeaveChannel  = 7
+
 	OperatePushMessage = 101
 )
