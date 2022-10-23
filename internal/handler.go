@@ -145,6 +145,11 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 	err = handler.messageApp.Send(ctx, msg, codec.Default(), packet)
+	if err == nil {
+		// save user session
+		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: "", Last: msg})
+		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: "", Last: msg})
+	}
 	return
 }
 

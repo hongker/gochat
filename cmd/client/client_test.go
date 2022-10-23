@@ -96,7 +96,7 @@ func (suite *ClientSuite) TestSendMessage() {
 	msg, err := suite.encode(api.OperateSendMessage, api.MessageSendRequest{
 		Content:     "some message",
 		ContentType: "text",
-		Target:      "1d96b25d-62d1-43d1-9ae7-8bca5bb6e59c",
+		Target:      "f2a6a816-f6ed-403f-8db8-16ef279cfd39",
 	})
 	suite.Nil(err)
 
@@ -112,6 +112,9 @@ func (suite *ClientSuite) TearDownSuite() {
 
 func (suite *ClientSuite) AfterTest(_, testName string) {
 	log.Println("after: ", testName)
+	if testName == "TestSendMessage" {
+		suite.TestListSession()
+	}
 }
 
 func (suite *ClientSuite) BeforeTest(_, testName string) {
