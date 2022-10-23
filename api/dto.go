@@ -1,4 +1,4 @@
-package internal
+package api
 
 type LoginRequest struct {
 	Name string `json:"name"`
@@ -8,4 +8,6 @@ type LoginResponse struct {
 }
 
 type HeartbeatRequest struct{}
-type HeartbeatResponse struct{}
+type HeartbeatResponse struct {
+	ServerTime int64 `json:"server_time"`
+}

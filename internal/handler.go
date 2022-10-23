@@ -5,13 +5,9 @@ import (
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	uuid "github.com/satori/go.uuid"
+	"gochat/api"
 	"sync"
 	"time"
-)
-
-const (
-	OperateHeartbeat = 1
-	OperateLogin     = 2
 )
 
 type Handler struct {
@@ -21,11 +17,12 @@ type Handler struct {
 }
 
 func (handler *Handler) Install(router *znet.Router) {
-	router.Route(OperateLogin, znet.StandardHandler[LoginRequest, LoginResponse](handler.login))
-	router.Route(OperateHeartbeat, znet.StandardHandler[HeartbeatRequest, HeartbeatResponse](handler.heartbeat))
+	router.Route(api.OperateLogin, znet.StandardHandler[api.LoginRequest, api.LoginResponse](handler.login))
+	router.Route(api.OperateHeartbeat, znet.StandardHandler[api.HeartbeatRequest, api.HeartbeatResponse](handler.heartbeat))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
+	component.Provider().Logger().Infof("[%s] connected", conn.ID())
 	timer := time.NewTimer(handler.heartbeatInterval)
 	go func() {
 		defer runtime.HandleCrash()
@@ -33,9 +30,13 @@ func (handler *Handler) OnConnect(conn *znet.Connection) {
 
 		conn.Close()
 	}()
+	handler.rmw.Lock()
+	handler.timers[conn.ID()] = timer
+	handler.rmw.Unlock()
 
 }
 func (handler *Handler) OnDisconnect(conn *znet.Connection) {
+	component.Provider().Logger().Infof("[%s] Disconnected", conn.ID())
 	handler.rmw.RLock()
 	timer := handler.timers[conn.ID()]
 	handler.rmw.RUnlock()
@@ -47,7 +48,7 @@ func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 }
 
 func (handler *Handler) CheckLogin(ctx *znet.Context) {
-	if ctx.Request().Header.Operate == OperateLogin {
+	if ctx.Request().Header.Operate == api.OperateLogin {
 		ctx.Next()
 		return
 	}
@@ -61,14 +62,14 @@ func (handler *Handler) CheckLogin(ctx *znet.Context) {
 	ctx.Next()
 }
 
-func (handler *Handler) login(ctx *znet.Context, req *LoginRequest) (resp *LoginResponse, err error) {
-	resp = &LoginResponse{UID: uuid.NewV4().String()}
+func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
+	resp = &api.LoginResponse{UID: uuid.NewV4().String()}
 	ctx.Conn().Property().Set("uid", resp.UID)
 	ctx.Conn().Property().Set("username", req.Name)
 	return
 }
 
-func (handler *Handler) heartbeat(ctx *znet.Context, req *HeartbeatRequest) (resp *HeartbeatResponse, err error) {
+func (handler *Handler) heartbeat(ctx *znet.Context, req *api.HeartbeatRequest) (resp *api.HeartbeatResponse, err error) {
 	handler.rmw.RLock()
 	timer := handler.timers[ctx.Conn().ID()]
 	handler.rmw.RUnlock()
@@ -77,6 +78,7 @@ func (handler *Handler) heartbeat(ctx *znet.Context, req *HeartbeatRequest) (res
 	}
 
 	timer.Reset(handler.heartbeatInterval)
+	resp = &api.HeartbeatResponse{ServerTime: time.Now().UnixMilli()}
 	return
 }
 
