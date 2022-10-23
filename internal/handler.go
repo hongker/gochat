@@ -143,6 +143,12 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 }
 
 func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
+	uid, _ := handler.getCurrentUser(ctx)
+	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
+	if err != nil {
+		return
+	}
+	resp = &api.ChannelCreateResponse{ID: channel.ID}
 	return
 }
 

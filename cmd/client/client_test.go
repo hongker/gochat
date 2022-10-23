@@ -110,6 +110,15 @@ func (suite *ClientSuite) AfterTest(_, testName string) {
 	log.Println("after: ", testName)
 }
 
+func (suite *ClientSuite) TestCreateChannel() {
+	msg, err := suite.encode(api.OperateCreateChannel, api.ChannelCreateRequest{Name: "world"})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
 func (suite *ClientSuite) encode(operate int16, data any) ([]byte, error) {
 	packet := &codec.Packet{Header: codec.Header{Operate: operate, ContentType: codec.ContentTypeJSON, Seq: 1}}
 
