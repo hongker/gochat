@@ -6,11 +6,14 @@ import (
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
+	"sync"
 	"time"
 )
 
 type MessageApplication struct {
-	bucket *bucket.Bucket
+	bucket   *bucket.Bucket
+	rmw      sync.RWMutex
+	messages map[string][]*Message
 }
 
 type Message struct {
@@ -44,11 +47,30 @@ func (app *MessageApplication) Send(ctx context.Context, msg *Message, codec cod
 	receiverSession.Send(buf)
 	senderSession.Send(buf)
 
+	app.Save(receiverSession.ID, msg)
+	app.Save(senderSession.ID, msg)
+
 	return
+}
+
+func (app *MessageApplication) Save(sessionId string, msg *Message) {
+	app.rmw.Lock()
+	defer app.rmw.Unlock()
+	items := app.messages[sessionId]
+	if len(items) == 0 {
+		items = make([]*Message, 0, 100)
+	}
+	items = append(items, msg)
+	if total := len(items); total > 100 {
+		items = items[total-100 : total]
+	}
+	app.messages[sessionId] = items
+
 }
 
 func NewMessageApplication(bucket *bucket.Bucket) *MessageApplication {
 	return &MessageApplication{
-		bucket: bucket,
+		bucket:   bucket,
+		messages: map[string][]*Message{},
 	}
 }
