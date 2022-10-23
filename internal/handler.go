@@ -64,6 +64,11 @@ func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	delete(handler.timers, conn.ID())
 }
 
+func (handler *Handler) DebugLog(ctx *znet.Context) {
+	component.Provider().Logger().Infof("[%s] request log: header=%+v, body=%v ", ctx.Conn().ID(), ctx.Request().Header, string(ctx.Request().Body))
+	ctx.Next()
+}
+
 func (handler *Handler) CheckLogin(ctx *znet.Context) {
 	if ctx.Request().Header.Operate == api.OperateLogin {
 		ctx.Next()
@@ -143,6 +148,7 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 }
 
 func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
+
 	uid, _ := handler.getCurrentUser(ctx)
 	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
 	if err != nil {
@@ -153,9 +159,13 @@ func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateR
 }
 
 func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinRequest) (resp *api.ChannelJoinResponse, err error) {
+	uid, _ := handler.getCurrentUser(ctx)
+	err = handler.channelApp.Join(ctx, req.ID, uid)
 	return
 }
 func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
+	uid, _ := handler.getCurrentUser(ctx)
+	err = handler.channelApp.Leave(ctx, req.ID, uid)
 	return
 }
 

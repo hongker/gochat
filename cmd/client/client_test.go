@@ -71,6 +71,7 @@ func (suite *ClientSuite) login(username string) {
 }
 
 func (suite *ClientSuite) SendHeartbeat() {
+	log.Println("heartbeat")
 	msg, err := suite.encode(api.OperateHeartbeat, api.HeartbeatRequest{})
 	suite.Nil(err)
 
@@ -110,8 +111,36 @@ func (suite *ClientSuite) AfterTest(_, testName string) {
 	log.Println("after: ", testName)
 }
 
+func (suite *ClientSuite) BeforeTest(_, testName string) {
+	log.Println("before: ", testName)
+	if testName == "TestLeaveChannel" {
+		suite.TestJoinChannel()
+		time.Sleep(1 * time.Second)
+	}
+}
+
 func (suite *ClientSuite) TestCreateChannel() {
 	msg, err := suite.encode(api.OperateCreateChannel, api.ChannelCreateRequest{Name: "world"})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
+func (suite *ClientSuite) TestJoinChannel() {
+	log.Println("TestJoinChannel")
+	msg, err := suite.encode(api.OperateJoinChannel, api.ChannelLeaveRequest{ID: "51965150-3d47-4393-995c-e0e544f65db0"})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
+func (suite *ClientSuite) TestLeaveChannel() {
+	log.Println("TestLeaveChannel")
+	msg, err := suite.encode(api.OperateLeaveChannel, api.ChannelLeaveRequest{ID: "51965150-3d47-4393-995c-e0e544f65db0"})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)

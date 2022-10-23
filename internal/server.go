@@ -17,7 +17,7 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	instance := znet.New(func(options *znet.Options) {
 		options.OnConnect = handler.OnConnect
 		options.OnDisconnect = handler.OnDisconnect
-		options.Middlewares = append(options.Middlewares, handler.CheckLogin)
+		options.Middlewares = append(options.Middlewares, handler.DebugLog, handler.CheckLogin)
 	})
 
 	handler.Install(instance.Router())

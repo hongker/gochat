@@ -25,13 +25,30 @@ func (app *ChannelApplication) Create(ctx context.Context, uid, name string) (ch
 	app.rmu.Lock()
 	app.channels[id] = channel
 	app.rmu.Unlock()
-	app.bucket.AddChannel(id)
+
+	app.bucket.SubscribeChannel(app.bucket.AddChannel(id), app.bucket.GetSession(uid))
 
 	return
 }
 
-func (app *ChannelApplication) Get(ctx context.Context, id string) (channel *Channel, err error) {
+func (app *ChannelApplication) Join(ctx context.Context, id string, uid string) (err error) {
+	channel := app.bucket.GetChannel(id)
+	if channel == nil {
+		return
+	}
 
+	app.bucket.SubscribeChannel(channel, app.bucket.GetSession(uid))
+
+	return
+}
+
+func (app *ChannelApplication) Leave(ctx context.Context, id string, uid string) (err error) {
+	channel := app.bucket.GetChannel(id)
+	if channel == nil {
+		return
+	}
+
+	app.bucket.UnsubscribeChannel(channel, app.bucket.GetSession(uid))
 	return
 }
 

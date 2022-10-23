@@ -26,11 +26,12 @@ type QueueItem struct {
 	Msg     []byte
 }
 
-func (bucket *Bucket) AddChannel(id string) {
+func (bucket *Bucket) AddChannel(id string) *Channel {
 	channel := NewChannel(id)
 	bucket.rmw.Lock()
 	bucket.channels[id] = channel
 	bucket.rmw.Unlock()
+	return channel
 }
 func (bucket *Bucket) RemoveChannel(channel *Channel) {
 	bucket.rmw.Lock()
