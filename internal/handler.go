@@ -2,10 +2,12 @@ package internal
 
 import (
 	"github.com/ebar-go/ego/component"
+	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	uuid "github.com/satori/go.uuid"
 	"gochat/api"
+	"gochat/internal/application"
 	"sync"
 	"time"
 )
@@ -14,11 +16,14 @@ type Handler struct {
 	rmw               sync.RWMutex
 	timers            map[string]*time.Timer
 	heartbeatInterval time.Duration
+	sessionApp        *application.SessionApplication
 }
 
 func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateLogin, znet.StandardHandler[api.LoginRequest, api.LoginResponse](handler.login))
 	router.Route(api.OperateHeartbeat, znet.StandardHandler[api.HeartbeatRequest, api.HeartbeatResponse](handler.heartbeat))
+	router.Route(api.OperateListSession, znet.StandardHandler[api.SessionListRequest, api.SessionListResponse](handler.listSession))
+	router.Route(api.OperateSendMessage, znet.StandardHandler[api.MessageSendRequest, api.MessageSendResponse](handler.sendMessage))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
@@ -53,13 +58,21 @@ func (handler *Handler) CheckLogin(ctx *znet.Context) {
 		return
 	}
 
-	_, exist := ctx.Conn().Property().Get("uid")
-	if !exist {
-		component.Provider().Logger().Error("unauthorized")
+	_, err := handler.getCurrentUser(ctx)
+	if err != nil {
+		component.Provider().Logger().Error(err.Error())
 		ctx.Abort()
 		return
 	}
 	ctx.Next()
+}
+
+func (handler *Handler) getCurrentUser(ctx *znet.Context) (string, error) {
+	uid, exist := ctx.Conn().Property().Get("uid")
+	if !exist {
+		return "", errors.Unauthorized("unauthorized")
+	}
+	return uid.(string), nil
 }
 
 func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
@@ -82,9 +95,31 @@ func (handler *Handler) heartbeat(ctx *znet.Context, req *api.HeartbeatRequest) 
 	return
 }
 
+func (handler *Handler) listSession(ctx *znet.Context, req *api.SessionListRequest) (resp *api.SessionListResponse, err error) {
+	uid, err := handler.getCurrentUser(ctx)
+	if err != nil {
+		return
+	}
+	sessions, err := handler.sessionApp.GetSessionList(ctx, uid)
+	if err != nil {
+		return
+	}
+
+	resp = &api.SessionListResponse{Items: make([]api.Session, 0, len(sessions))}
+	for _, session := range sessions {
+		resp.Items = append(resp.Items, api.Session{ID: session.ID, Title: session.Title})
+	}
+	return
+}
+
+func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendRequest) (resp *api.MessageSendResponse, err error) {
+	return
+}
+
 func NewHandler() *Handler {
 	return &Handler{
 		timers:            map[string]*time.Timer{},
 		heartbeatInterval: time.Minute,
+		sessionApp:        application.NewSessionApplication(),
 	}
 }

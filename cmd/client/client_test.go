@@ -25,6 +25,8 @@ func (suite *ClientSuite) SetupTest() {
 	suite.Nil(err)
 
 	go suite.receive(signal.SetupSignalHandler())
+
+	suite.Login()
 }
 
 func (suite *ClientSuite) receive(stop <-chan struct{}) {
@@ -41,11 +43,16 @@ func (suite *ClientSuite) receive(stop <-chan struct{}) {
 			return
 		}
 
-		log.Println("receive:", string(buf[:n]))
+		packet := &codec.Packet{}
+		err = suite.codec.Unpack(packet, buf[:n])
+		if err != nil {
+			return
+		}
+		log.Printf("receive: operate=%d,seq=%d,body=%s", packet.Header.Operate, packet.Header.Seq, string(packet.Body))
 	}
 }
 
-func (suite *ClientSuite) TestLogin() {
+func (suite *ClientSuite) Login() {
 	msg, err := suite.encode(api.OperateLogin, api.LoginRequest{Name: "foo"})
 	suite.Nil(err)
 
@@ -53,9 +60,15 @@ func (suite *ClientSuite) TestLogin() {
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
 
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 3)
 
-	suite.SendHeartbeat()
+	go func() {
+		for {
+			suite.SendHeartbeat()
+			time.Sleep(time.Second * 50)
+		}
+	}()
+
 }
 
 func (suite *ClientSuite) SendHeartbeat() {
@@ -66,6 +79,16 @@ func (suite *ClientSuite) SendHeartbeat() {
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
 
+	time.Sleep(time.Second * 5)
+}
+
+func (suite *ClientSuite) TestListSession() {
+	msg, err := suite.encode(api.OperateListSession, api.SessionListRequest{})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
 	time.Sleep(time.Second * 5)
 }
 
