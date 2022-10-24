@@ -52,3 +52,16 @@ type ChannelBroadcastRequest struct {
 	Target      string `json:"target"`
 }
 type ChannelBroadcastResponse struct{}
+
+type MessageQueryRequest struct {
+	SessionID string `json:"session_id"`
+}
+type MessageQueryResponse struct {
+	Items []Message `json:"items"`
+}
+type Message struct {
+	ID          string `json:"id"`
+	Content     string `json:"content"`
+	ContentType string `json:"content_type"`
+	CreatedAt   int64  `json:"created_at"`
+}

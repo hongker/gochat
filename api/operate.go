@@ -10,6 +10,7 @@ const (
 	OperateJoinChannel      = 6
 	OperateLeaveChannel     = 7
 	OperateBroadcastChannel = 8
+	OperateQueryMessage     = 9
 
 	OperatePushMessage = 101
 )

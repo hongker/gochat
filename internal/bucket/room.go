@@ -44,6 +44,7 @@ func NewRoom() *Room {
 type Session struct {
 	ID         string
 	Connection *znet.Connection
+	Channels   []*Channel
 }
 
 func NewSession(id string, connection *znet.Connection) *Session {

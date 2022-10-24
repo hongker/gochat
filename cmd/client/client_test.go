@@ -30,7 +30,7 @@ func (suite *ClientSuite) SetupTest() {
 	go suite.receive(512)
 
 	suite.login("foo")
-	suite.channelID = "49d5dea5-8fee-4fd0-af09-4939508b2a3c"
+	suite.channelID = "91df11cc-6cd6-4009-a855-fb3603568582"
 
 }
 
@@ -62,11 +62,11 @@ func (suite *ClientSuite) login(username string) {
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
 
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 1)
 
 	go func() {
 		for {
-			time.Sleep(time.Second * 30)
+			time.Sleep(time.Second * 10)
 			suite.SendHeartbeat()
 		}
 	}()
@@ -110,23 +110,6 @@ func (suite *ClientSuite) TearDownSuite() {
 	<-signal.SetupSignalHandler()
 }
 
-func (suite *ClientSuite) AfterTest(_, testName string) {
-	log.Println("after: ", testName)
-	if testName == "TestSendMessage" {
-		suite.TestListSession()
-	}
-}
-
-func (suite *ClientSuite) BeforeTest(_, testName string) {
-	log.Println("before: ", testName)
-	if testName == "TestLeaveChannel" {
-		suite.TestJoinChannel()
-		time.Sleep(1 * time.Second)
-	} else if testName == "TestBroadcastChannel" {
-		suite.TestJoinChannel()
-	}
-}
-
 func (suite *ClientSuite) TestCreateChannel() {
 	msg, err := suite.encode(api.OperateCreateChannel, api.ChannelCreateRequest{Name: "world"})
 	suite.Nil(err)
@@ -158,6 +141,7 @@ func (suite *ClientSuite) TestLeaveChannel() {
 
 func (suite *ClientSuite) TestBroadcastChannel() {
 	log.Println("TestBroadcastChannel")
+	suite.TestJoinChannel()
 	msg, err := suite.encode(api.OperateBroadcastChannel, api.ChannelBroadcastRequest{
 		Content:     "some message",
 		ContentType: "text",
@@ -166,6 +150,19 @@ func (suite *ClientSuite) TestBroadcastChannel() {
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
+	log.Printf("write message:%s, n=%d\n", string(msg), n)
+	suite.Nil(err)
+	suite.Equal(len(msg), n)
+}
+
+func (suite *ClientSuite) TestQueryMessage() {
+	msg, err := suite.encode(api.OperateQueryMessage, api.MessageQueryRequest{
+		SessionID: suite.channelID,
+	})
+	suite.Nil(err)
+
+	n, err := suite.conn.Write(msg)
+	log.Printf("write message:%s, n=%d\n", string(msg), n)
 	suite.Nil(err)
 	suite.Equal(len(msg), n)
 }

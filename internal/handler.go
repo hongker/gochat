@@ -37,6 +37,8 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateLeaveChannel, znet.StandardHandler[api.ChannelLeaveRequest, api.ChannelLeaveResponse](handler.leaveChannel))
 	router.Route(api.OperateCreateChannel, znet.StandardHandler[api.ChannelCreateRequest, api.ChannelCreateResponse](handler.createChannel))
 	router.Route(api.OperateBroadcastChannel, znet.StandardHandler[api.ChannelBroadcastRequest, api.ChannelBroadcastResponse](handler.broadcastChannel))
+
+	router.Route(api.OperateQueryMessage, znet.StandardHandler[api.MessageQueryRequest, api.MessageQueryResponse](handler.queryMessage))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
@@ -63,6 +65,15 @@ func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	}
 	timer.Stop()
 	delete(handler.timers, conn.ID())
+
+	uid, exist := conn.Property().Get("uid")
+	if !exist {
+		return
+	}
+	session := handler.bucket.GetSession(uid.(string))
+	for _, channel := range session.Channels {
+		handler.bucket.UnsubscribeChannel(channel, session)
+	}
 }
 
 func (handler *Handler) DebugLog(ctx *znet.Context) {
@@ -179,12 +190,38 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *api.ChannelBroa
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 
 	uid, _ := handler.getCurrentUser(ctx)
-	err = handler.channelApp.Broadcast(ctx, &application.Message{
+
+	msg := &application.Message{
 		Content:     req.Content,
 		ContentType: req.ContentType,
 		Target:      req.Target,
 		Sender:      uid,
-	}, codec.Default(), packet)
+	}
+	err = handler.channelApp.Broadcast(ctx, msg, codec.Default(), packet)
+
+	if err != nil {
+		return
+	}
+
+	handler.messageApp.Save(req.Target, msg)
+	return
+}
+
+func (handler *Handler) queryMessage(ctx *znet.Context, req *api.MessageQueryRequest) (resp *api.MessageQueryResponse, err error) {
+	items, err := handler.messageApp.Query(ctx, req.SessionID)
+	if err != nil {
+		return
+	}
+
+	resp = &api.MessageQueryResponse{Items: make([]api.Message, len(items))}
+	for idx, item := range items {
+		resp.Items[idx] = api.Message{
+			ID:          item.ID,
+			Content:     item.Content,
+			CreatedAt:   item.CreatedAt,
+			ContentType: item.ContentType,
+		}
+	}
 	return
 }
 

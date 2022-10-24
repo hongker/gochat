@@ -25,6 +25,14 @@ type Message struct {
 	CreatedAt   int64  `json:"created_at"`
 }
 
+func (app *MessageApplication) Query(ctx context.Context, sessionID string) (items []*Message, err error) {
+	app.rmw.RLock()
+	items = app.messages[sessionID]
+	app.rmw.RUnlock()
+	return
+
+}
+
 func (app *MessageApplication) Send(ctx context.Context, msg *Message, codec codec.Codec, packet *codec.Packet) (err error) {
 	receiverSession := app.bucket.GetSession(msg.Target)
 	if receiverSession == nil {
