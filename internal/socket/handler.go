@@ -108,7 +108,6 @@ func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *a
 	user := &application.User{Name: req.Name}
 	err = handler.userApp.Login(ctx, user)
 	if err != nil {
-
 		return
 	}
 	resp = &api.LoginResponse{UID: user.ID}

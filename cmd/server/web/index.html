@@ -28,11 +28,16 @@
         <link href="static/css/app-dark.min.css" id="app-dark-style" rel="stylesheet" type="text/css">
         <link href="static/css/app.min.css" id="app-style" rel="stylesheet" type="text/css">
 
+        <!-- 先引入 Vue -->
+        <script src="https://unpkg.com/vue@3.2.41/dist/vue.global.prod.js"></script>
+        <!-- 引入 http-vue-loader -->
+        <script src="https://unpkg.com/http-vue-loader@1.4.2/src/httpVueLoader.js"></script>
+
     </head>
 
     <body>
 
-        <div class="layout-wrapper d-lg-flex">
+        <div class="layout-wrapper d-lg-flex" id="vue">
 
             <!-- Start left sidebar-menu -->
             <div class="side-menu flex-lg-column mr-lg-1">
@@ -98,7 +103,7 @@
                 <div class="flex-lg-column d-none d-lg-block">
                     <ul class="nav side-menu-nav justify-content-center">
                         <li class="nav-item">
-                            <a class="nav-link" id="light-dark" href="#" data-toggle="tooltip" data-trigger="hover" data-placement="right" title="Dark / Light Mode">
+                            <a class="nav-link" id="light-dark" href="/web/dark" @click="dark" data-toggle="tooltip" data-trigger="hover" data-placement="right" title="Dark / Light Mode">
                                 <i class="ri-sun-line theme-mode-icon"></i>
                             </a>
                         </li>
@@ -2549,5 +2554,24 @@
 
         <script src="static/js/app.js"></script>
 
+        <script>
+            // 使用httpVueLoader
+            const app={
+                data(){
+                    return{
+                        rhtml:"<h1>哈哈哈</h1>"
+                    }
+                },
+                mounted() {
+                  console.log("vue load success")
+                },
+                methods: {
+                    dark() {
+                        console.log("dark")
+                    }
+                }
+            }
+            Vue.createApp(app).mount("#vue")
+        </script>
     </body>
 </html>
