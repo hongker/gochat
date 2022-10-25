@@ -1,4 +1,4 @@
-package internal
+package socket
 
 import (
 	"github.com/ebar-go/ego/component"
@@ -6,7 +6,6 @@ import (
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	"github.com/ebar-go/znet/codec"
-	uuid "github.com/satori/go.uuid"
 	"gochat/api"
 	"gochat/internal/application"
 	"gochat/internal/bucket"
@@ -22,6 +21,7 @@ type Handler struct {
 	sessionApp        *application.SessionApplication
 	messageApp        *application.MessageApplication
 	channelApp        *application.ChannelApplication
+	userApp           *application.UserApplication
 }
 
 func (handler *Handler) Install(router *znet.Router) {
@@ -105,10 +105,15 @@ func (handler *Handler) getCurrentUser(ctx *znet.Context) (string, error) {
 }
 
 func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
-	resp = &api.LoginResponse{UID: uuid.NewV4().String()}
-	ctx.Conn().Property().Set("uid", resp.UID)
-	ctx.Conn().Property().Set("username", req.Name)
-	handler.bucket.AddSession(bucket.NewSession(resp.UID, ctx.Conn()))
+	user := &application.User{Name: req.Name}
+	err = handler.userApp.Login(ctx, user)
+	if err != nil {
+
+		return
+	}
+	resp = &api.LoginResponse{UID: user.ID}
+	ctx.Conn().Property().Set("uid", user.ID)
+	handler.bucket.AddSession(bucket.NewSession(user.ID, ctx.Conn()))
 	return
 }
 
@@ -234,5 +239,6 @@ func NewHandler() *Handler {
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(b),
 		channelApp:        application.NewChannelApplication(b),
+		userApp:           application.NewUserApplication(),
 	}
 }

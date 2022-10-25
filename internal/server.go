@@ -6,6 +6,7 @@ import (
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	"gochat/internal/http"
+	"gochat/internal/socket"
 	"log"
 )
 
@@ -18,10 +19,11 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	defer httpCancel()
 	go func() {
 		defer runtime.HandleCrash()
-		ego.NewHTTPServer(":8080").RegisterRouteLoader(http.NewHandler().Install).Serve(httpContext.Done())
+		ego.NewHTTPServer(":8080").RegisterRouteLoader(http.NewHandler().Install).
+			Serve(httpContext.Done())
 	}()
 
-	handler := NewHandler()
+	handler := socket.NewHandler()
 	instance := znet.New(func(options *znet.Options) {
 		options.OnConnect = handler.OnConnect
 		options.OnDisconnect = handler.OnDisconnect
