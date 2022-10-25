@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gochat/cmd/options"
+	"gochat/cmd/server/options"
 	"log"
 	"os"
 )
