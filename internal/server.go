@@ -1,7 +1,11 @@
 package internal
 
 import (
+	"context"
+	"github.com/ebar-go/ego"
+	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
+	"gochat/internal/http"
 	"log"
 )
 
@@ -10,8 +14,12 @@ type Server struct{}
 func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	log.Println("server started")
 
-	//ctx, cancel := context.WithCancel(context.Background())
-	//defer cancel()
+	httpContext, httpCancel := context.WithCancel(context.Background())
+	defer httpCancel()
+	go func() {
+		defer runtime.HandleCrash()
+		ego.NewHTTPServer(":8080").RegisterRouteLoader(http.NewHandler().Install).Serve(httpContext.Done())
+	}()
 
 	handler := NewHandler()
 	instance := znet.New(func(options *znet.Options) {
