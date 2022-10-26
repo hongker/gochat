@@ -4,7 +4,6 @@ import (
 	"github.com/ebar-go/ego/component"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
-	"github.com/ebar-go/znet/codec"
 	"gochat/api"
 	"gochat/internal/application"
 	"gochat/internal/bucket"
@@ -21,6 +20,19 @@ type Handler struct {
 	messageApp        *application.MessageApplication
 	channelApp        *application.ChannelApplication
 	userApp           *application.UserApplication
+}
+
+func NewHandler() *Handler {
+	b := bucket.NewBucket()
+	return &Handler{
+		bucket:            b,
+		timers:            map[string]*time.Timer{},
+		heartbeatInterval: time.Minute,
+		sessionApp:        application.NewSessionApplication(),
+		messageApp:        application.NewMessageApplication(b),
+		channelApp:        application.NewChannelApplication(b),
+		userApp:           application.NewUserApplication(),
+	}
 }
 
 func (handler *Handler) Install(router *znet.Router) {
@@ -86,77 +98,4 @@ func (handler *Handler) heartbeat(ctx *znet.Context, req *api.HeartbeatRequest) 
 	timer.Reset(handler.heartbeatInterval)
 	resp = &api.HeartbeatResponse{ServerTime: time.Now().UnixMilli()}
 	return
-}
-
-func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
-	uid := handler.currentUser(ctx)
-	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
-	if err != nil {
-		return
-	}
-	resp = &api.ChannelCreateResponse{ID: channel.ID}
-	return
-}
-
-func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinRequest) (resp *api.ChannelJoinResponse, err error) {
-	uid := handler.currentUser(ctx)
-	err = handler.channelApp.Join(ctx, req.ID, uid)
-	return
-}
-func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
-	uid := handler.currentUser(ctx)
-	err = handler.channelApp.Leave(ctx, req.ID, uid)
-	return
-}
-
-func (handler *Handler) broadcastChannel(ctx *znet.Context, req *api.ChannelBroadcastRequest) (resp *api.ChannelBroadcastResponse, err error) {
-	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
-
-	uid := handler.currentUser(ctx)
-
-	msg := &application.Message{
-		Content:     req.Content,
-		ContentType: req.ContentType,
-		Target:      req.Target,
-		Sender:      uid,
-	}
-	err = handler.channelApp.Broadcast(ctx, msg, codec.Default(), packet)
-
-	if err != nil {
-		return
-	}
-
-	handler.messageApp.Save(req.Target, msg)
-	return
-}
-
-func (handler *Handler) queryMessage(ctx *znet.Context, req *api.MessageQueryRequest) (resp *api.MessageQueryResponse, err error) {
-	items, err := handler.messageApp.Query(ctx, req.SessionID)
-	if err != nil {
-		return
-	}
-
-	resp = &api.MessageQueryResponse{Items: make([]api.Message, len(items))}
-	for idx, item := range items {
-		resp.Items[idx] = api.Message{
-			ID:          item.ID,
-			Content:     item.Content,
-			CreatedAt:   item.CreatedAt,
-			ContentType: item.ContentType,
-		}
-	}
-	return
-}
-
-func NewHandler() *Handler {
-	b := bucket.NewBucket()
-	return &Handler{
-		bucket:            b,
-		timers:            map[string]*time.Timer{},
-		heartbeatInterval: time.Minute,
-		sessionApp:        application.NewSessionApplication(),
-		messageApp:        application.NewMessageApplication(b),
-		channelApp:        application.NewChannelApplication(b),
-		userApp:           application.NewUserApplication(),
-	}
 }

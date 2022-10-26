@@ -44,3 +44,22 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 	}
 	return
 }
+
+// queryMessage query session history message
+func (handler *Handler) queryMessage(ctx *znet.Context, req *api.MessageQueryRequest) (resp *api.MessageQueryResponse, err error) {
+	items, err := handler.messageApp.Query(ctx, req.SessionID)
+	if err != nil {
+		return
+	}
+
+	resp = &api.MessageQueryResponse{Items: make([]api.Message, len(items))}
+	for idx, item := range items {
+		resp.Items[idx] = api.Message{
+			ID:          item.ID,
+			Content:     item.Content,
+			CreatedAt:   item.CreatedAt,
+			ContentType: item.ContentType,
+		}
+	}
+	return
+}
