@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+
+    // let content = JSON.stringify({name:"foo"})
+    // let buffer = new ArrayBuffer(content.length + 10);
+    // let view = new DataView(buffer);
+    // view.setInt32(0, content.length + 10);
+    // view.setInt16(4, 2);
+    // view.setInt16(6, 1);
+    // view.setInt16(8, 1);
+    //
+    // bytes = stringToByte(content)
+    //
+    // for (let i = 0; i < bytes.length; i++) {
+    //     view.setInt8(10+i, bytes[i])
+    // }
+    // console.log(String.fromCharCode.apply(null, new Uint8Array(buffer)))
+
+
+    var ws = new WebSocket('ws://localhost:8082');
+    ws.binaryType = 'arraybuffer';
+    ws.onopen = function() {
+        setTimeout(function() {
+            auth();
+        }, 2000)
+
+    }
+
+    // ws.onmessage = function (e) {
+    //     console.log('from server: ' + e.data);
+    // };
+
+    const rawHeaderLen = 10;
+    const packetOffset = 0;
+    const opOffset = 4;
+    const contentTypeOffset = 6;
+    const seqOffset = 8;
+    var textEncoder = new TextEncoder();
+    function auth() {
+        var token = '{"name":"foo"}'
+        var headerBuf = new ArrayBuffer(rawHeaderLen);
+        var headerView = new DataView(headerBuf, 0);
+        var bodyBuf = textEncoder.encode(token);
+        headerView.setInt32(packetOffset, rawHeaderLen + bodyBuf.byteLength);
+        headerView.setInt16(opOffset, 2);
+        headerView.setInt16(contentTypeOffset, 1);
+        headerView.setInt16(seqOffset, 1);
+        var buf = mergeArrayBuffer(headerBuf, bodyBuf)
+        console.log(buf);
+        ws.send("99999999");
+
+        // appendMsg("send: auth token: " + token);
+    }
+    function mergeArrayBuffer(ab1, ab2) {
+        var u81 = new Uint8Array(ab1),
+            u82 = new Uint8Array(ab2),
+            res = new Uint8Array(ab1.byteLength + ab2.byteLength);
+        res.set(u81, 0);
+        res.set(u82, ab1.byteLength);
+        return res.buffer;
+    }
+</script>
+</body>
+</html>

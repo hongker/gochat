@@ -28,7 +28,7 @@ func NewHandler() *Handler {
 	return &Handler{
 		bucket:            b,
 		timers:            map[string]*time.Timer{},
-		heartbeatInterval: time.Minute,
+		heartbeatInterval: time.Minute * 10,
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(b),
 		channelApp:        application.NewChannelApplication(b),

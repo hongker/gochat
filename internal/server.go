@@ -19,7 +19,7 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	defer httpCancel()
 	go func() {
 		defer runtime.HandleCrash()
-		ego.NewHTTPServer(":8080").RegisterRouteLoader(http.NewHandler().Install).
+		ego.NewHTTPServer(":8080").EnableReleaseMode().RegisterRouteLoader(http.NewHandler().Install).
 			Serve(httpContext.Done())
 	}()
 

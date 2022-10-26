@@ -11,8 +11,12 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 func (handler *Handler) Install(router *gin.Engine) {
-	router.LoadHTMLFiles("web/index.html", "web/dark.html")
+	router.LoadHTMLFiles("web/login.html", "web/index.html", "web/dark.html")
 	router.StaticFS("/web/static", http.Dir("./web/static"))
+
+	router.GET("/web/login", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "login.html", gin.H{})
+	})
 	router.GET("/web/index", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index.html", gin.H{})
 	})
