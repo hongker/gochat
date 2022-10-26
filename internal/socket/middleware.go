@@ -20,10 +20,9 @@ func (handler *Handler) CheckLogin(ctx *znet.Context) {
 		return
 	}
 
-	//
-	_, err := handler.getCurrentUser(ctx)
-	if err != nil {
-		component.Provider().Logger().Error(err.Error())
+	// validate login credentials
+	if uid := handler.currentUser(ctx); uid == "" {
+		component.Provider().Logger().Error("unauthorized")
 		ctx.Abort()
 		return
 	}

@@ -3,17 +3,18 @@ package application
 import (
 	"context"
 	uuid "github.com/satori/go.uuid"
-	"sync"
+	"gochat/pkg/cmap"
 	"time"
 )
 
 type UserApplication struct {
-	rmu   sync.RWMutex
-	items map[string]*User
+	collection *cmap.Container[string, *User]
 }
 
 func NewUserApplication() *UserApplication {
-	return &UserApplication{}
+	return &UserApplication{
+		collection: cmap.NewContainer[string, *User](),
+	}
 }
 
 type User struct {
@@ -22,12 +23,11 @@ type User struct {
 	CreatedAt int64
 }
 
-func (app *UserApplication) Login(ctx context.Context, user *User) error {
+// Auth represents user authentication
+func (app *UserApplication) Auth(ctx context.Context, user *User) error {
 	user.ID = uuid.NewV4().String()
 	user.CreatedAt = time.Now().Unix()
 
-	app.rmu.Lock()
-	app.items[user.ID] = user
-	app.rmu.Unlock()
+	app.collection.Set(user.ID, user)
 	return nil
 }

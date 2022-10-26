@@ -2,7 +2,6 @@ package socket
 
 import (
 	"github.com/ebar-go/ego/component"
-	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	"github.com/ebar-go/znet/codec"
@@ -76,46 +75,6 @@ func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	}
 }
 
-func (handler *Handler) DebugLog(ctx *znet.Context) {
-	component.Provider().Logger().Infof("[%s] request log: header=%+v, body=%v ", ctx.Conn().ID(), ctx.Request().Header, string(ctx.Request().Body))
-	ctx.Next()
-}
-
-func (handler *Handler) CheckLogin(ctx *znet.Context) {
-	if ctx.Request().Header.Operate == api.OperateLogin {
-		ctx.Next()
-		return
-	}
-
-	_, err := handler.getCurrentUser(ctx)
-	if err != nil {
-		component.Provider().Logger().Error(err.Error())
-		ctx.Abort()
-		return
-	}
-	ctx.Next()
-}
-
-func (handler *Handler) getCurrentUser(ctx *znet.Context) (string, error) {
-	uid, exist := ctx.Conn().Property().Get("uid")
-	if !exist {
-		return "", errors.Unauthorized("unauthorized")
-	}
-	return uid.(string), nil
-}
-
-func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
-	user := &application.User{Name: req.Name}
-	err = handler.userApp.Login(ctx, user)
-	if err != nil {
-		return
-	}
-	resp = &api.LoginResponse{UID: user.ID}
-	ctx.Conn().Property().Set("uid", user.ID)
-	handler.bucket.AddSession(bucket.NewSession(user.ID, ctx.Conn()))
-	return
-}
-
 func (handler *Handler) heartbeat(ctx *znet.Context, req *api.HeartbeatRequest) (resp *api.HeartbeatResponse, err error) {
 	handler.rmw.RLock()
 	timer := handler.timers[ctx.Conn().ID()]
@@ -130,10 +89,7 @@ func (handler *Handler) heartbeat(ctx *znet.Context, req *api.HeartbeatRequest) 
 }
 
 func (handler *Handler) listSession(ctx *znet.Context, req *api.SessionListRequest) (resp *api.SessionListResponse, err error) {
-	uid, err := handler.getCurrentUser(ctx)
-	if err != nil {
-		return
-	}
+	uid := handler.currentUser(ctx)
 	sessions, err := handler.sessionApp.GetSessionList(ctx, uid)
 	if err != nil {
 		return
@@ -147,7 +103,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *api.SessionListReque
 }
 
 func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendRequest) (resp *api.MessageSendResponse, err error) {
-	uid, err := handler.getCurrentUser(ctx)
+	uid := handler.currentUser(ctx)
 	if err != nil {
 		return
 	}
@@ -170,7 +126,7 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 
 func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
 
-	uid, _ := handler.getCurrentUser(ctx)
+	uid := handler.currentUser(ctx)
 	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
 	if err != nil {
 		return
@@ -180,12 +136,12 @@ func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateR
 }
 
 func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinRequest) (resp *api.ChannelJoinResponse, err error) {
-	uid, _ := handler.getCurrentUser(ctx)
+	uid := handler.currentUser(ctx)
 	err = handler.channelApp.Join(ctx, req.ID, uid)
 	return
 }
 func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
-	uid, _ := handler.getCurrentUser(ctx)
+	uid := handler.currentUser(ctx)
 	err = handler.channelApp.Leave(ctx, req.ID, uid)
 	return
 }
@@ -193,7 +149,7 @@ func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveReq
 func (handler *Handler) broadcastChannel(ctx *znet.Context, req *api.ChannelBroadcastRequest) (resp *api.ChannelBroadcastResponse, err error) {
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 
-	uid, _ := handler.getCurrentUser(ctx)
+	uid := handler.currentUser(ctx)
 
 	msg := &application.Message{
 		Content:     req.Content,
