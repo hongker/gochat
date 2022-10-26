@@ -2,18 +2,20 @@ package application
 
 import (
 	"context"
-	uuid "github.com/satori/go.uuid"
 	"gochat/pkg/cmap"
+	"gochat/pkg/gen"
 	"time"
 )
 
 type UserApplication struct {
 	collection *cmap.Container[string, *User]
+	generator  gen.IDGenerator
 }
 
 func NewUserApplication() *UserApplication {
 	return &UserApplication{
 		collection: cmap.NewContainer[string, *User](),
+		generator:  gen.NewSnowFlakeGenerator(),
 	}
 }
 
@@ -25,7 +27,7 @@ type User struct {
 
 // Auth represents user authentication
 func (app *UserApplication) Auth(ctx context.Context, user *User) error {
-	user.ID = uuid.NewV4().String()
+	user.ID = app.generator.Generate()
 	user.CreatedAt = time.Now().Unix()
 
 	app.collection.Set(user.ID, user)

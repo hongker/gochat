@@ -4,7 +4,8 @@ type LoginRequest struct {
 	Name string `json:"name"`
 }
 type LoginResponse struct {
-	UID string `json:"uid"`
+	UID   string `json:"uid"`
+	Token string `json:"token"`
 }
 
 type HeartbeatRequest struct{}
