@@ -5,6 +5,7 @@ import (
 	"github.com/ebar-go/znet/codec"
 	"github.com/stretchr/testify/suite"
 	"gochat/api"
+	"gochat/internal/domain/dto"
 	"log"
 	"net"
 	"testing"
@@ -55,7 +56,7 @@ func (suite *ClientSuite) receive(maxReadBufferSize int) {
 
 func (suite *ClientSuite) login(username string) {
 	log.Println("login")
-	msg, err := suite.encode(api.OperateLogin, api.LoginRequest{Name: username})
+	msg, err := suite.encode(api.OperateLogin, dto.LoginRequest{Name: username})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -75,7 +76,7 @@ func (suite *ClientSuite) login(username string) {
 
 func (suite *ClientSuite) SendHeartbeat() {
 	log.Println("heartbeat")
-	msg, err := suite.encode(api.OperateHeartbeat, api.HeartbeatRequest{})
+	msg, err := suite.encode(api.OperateHeartbeat, dto.HeartbeatRequest{})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -84,7 +85,7 @@ func (suite *ClientSuite) SendHeartbeat() {
 }
 
 func (suite *ClientSuite) TestListSession() {
-	msg, err := suite.encode(api.OperateListSession, api.SessionListRequest{})
+	msg, err := suite.encode(api.OperateListSession, dto.SessionListRequest{})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -93,7 +94,7 @@ func (suite *ClientSuite) TestListSession() {
 }
 
 func (suite *ClientSuite) TestSendMessage() {
-	msg, err := suite.encode(api.OperateSendMessage, api.MessageSendRequest{
+	msg, err := suite.encode(api.OperateSendMessage, dto.MessageSendRequest{
 		Content:     "some message",
 		ContentType: "text",
 		Target:      "f2a6a816-f6ed-403f-8db8-16ef279cfd39",
@@ -111,7 +112,7 @@ func (suite *ClientSuite) TearDownSuite() {
 }
 
 func (suite *ClientSuite) TestCreateChannel() {
-	msg, err := suite.encode(api.OperateCreateChannel, api.ChannelCreateRequest{Name: "world"})
+	msg, err := suite.encode(api.OperateCreateChannel, dto.ChannelCreateRequest{Name: "world"})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -121,7 +122,7 @@ func (suite *ClientSuite) TestCreateChannel() {
 
 func (suite *ClientSuite) TestJoinChannel() {
 	log.Println("TestJoinChannel")
-	msg, err := suite.encode(api.OperateJoinChannel, api.ChannelLeaveRequest{ID: suite.channelID})
+	msg, err := suite.encode(api.OperateJoinChannel, dto.ChannelLeaveRequest{ID: suite.channelID})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -131,7 +132,7 @@ func (suite *ClientSuite) TestJoinChannel() {
 
 func (suite *ClientSuite) TestLeaveChannel() {
 	log.Println("TestLeaveChannel")
-	msg, err := suite.encode(api.OperateLeaveChannel, api.ChannelLeaveRequest{ID: suite.channelID})
+	msg, err := suite.encode(api.OperateLeaveChannel, dto.ChannelLeaveRequest{ID: suite.channelID})
 	suite.Nil(err)
 
 	n, err := suite.conn.Write(msg)
@@ -142,7 +143,7 @@ func (suite *ClientSuite) TestLeaveChannel() {
 func (suite *ClientSuite) TestBroadcastChannel() {
 	log.Println("TestBroadcastChannel")
 	suite.TestJoinChannel()
-	msg, err := suite.encode(api.OperateBroadcastChannel, api.ChannelBroadcastRequest{
+	msg, err := suite.encode(api.OperateBroadcastChannel, dto.ChannelBroadcastRequest{
 		Content:     "some message",
 		ContentType: "text",
 		Target:      suite.channelID,
@@ -156,7 +157,7 @@ func (suite *ClientSuite) TestBroadcastChannel() {
 }
 
 func (suite *ClientSuite) TestQueryMessage() {
-	msg, err := suite.encode(api.OperateQueryMessage, api.MessageQueryRequest{
+	msg, err := suite.encode(api.OperateQueryMessage, dto.MessageQueryRequest{
 		SessionID: suite.channelID,
 	})
 	suite.Nil(err)

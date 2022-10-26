@@ -5,25 +5,26 @@ import (
 	"github.com/ebar-go/znet/codec"
 	"gochat/api"
 	"gochat/internal/application"
+	"gochat/internal/domain/dto"
 )
 
 // listSession return a list of user sessions
-func (handler *Handler) listSession(ctx *znet.Context, req *api.SessionListRequest) (resp *api.SessionListResponse, err error) {
+func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListRequest) (resp *dto.SessionListResponse, err error) {
 	uid := handler.currentUser(ctx)
 	sessions, err := handler.sessionApp.GetSessionList(ctx, uid)
 	if err != nil {
 		return
 	}
 
-	resp = &api.SessionListResponse{Items: make([]api.Session, 0, len(sessions))}
+	resp = &dto.SessionListResponse{Items: make([]dto.Session, 0, len(sessions))}
 	for _, session := range sessions {
-		resp.Items = append(resp.Items, api.Session{ID: session.ID, Title: session.Title})
+		resp.Items = append(resp.Items, dto.Session{ID: session.ID, Title: session.Title})
 	}
 	return
 }
 
 // sendMessage sends a message to receiver
-func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendRequest) (resp *api.MessageSendResponse, err error) {
+func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendRequest) (resp *dto.MessageSendResponse, err error) {
 	uid := handler.currentUser(ctx)
 	if err != nil {
 		return
@@ -46,15 +47,15 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *api.MessageSendReque
 }
 
 // queryMessage query session history message
-func (handler *Handler) queryMessage(ctx *znet.Context, req *api.MessageQueryRequest) (resp *api.MessageQueryResponse, err error) {
+func (handler *Handler) queryMessage(ctx *znet.Context, req *dto.MessageQueryRequest) (resp *dto.MessageQueryResponse, err error) {
 	items, err := handler.messageApp.Query(ctx, req.SessionID)
 	if err != nil {
 		return
 	}
 
-	resp = &api.MessageQueryResponse{Items: make([]api.Message, len(items))}
+	resp = &dto.MessageQueryResponse{Items: make([]dto.Message, len(items))}
 	for idx, item := range items {
-		resp.Items[idx] = api.Message{
+		resp.Items[idx] = dto.Message{
 			ID:          item.ID,
 			Content:     item.Content,
 			CreatedAt:   item.CreatedAt,

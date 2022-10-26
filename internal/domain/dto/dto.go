@@ -1,4 +1,4 @@
-package api
+package dto
 
 type LoginRequest struct {
 	Name string `json:"name"`

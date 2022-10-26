@@ -5,30 +5,31 @@ import (
 	"github.com/ebar-go/znet/codec"
 	"gochat/api"
 	"gochat/internal/application"
+	"gochat/internal/domain/dto"
 )
 
-func (handler *Handler) createChannel(ctx *znet.Context, req *api.ChannelCreateRequest) (resp *api.ChannelCreateResponse, err error) {
+func (handler *Handler) createChannel(ctx *znet.Context, req *dto.ChannelCreateRequest) (resp *dto.ChannelCreateResponse, err error) {
 	uid := handler.currentUser(ctx)
 	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
 	if err != nil {
 		return
 	}
-	resp = &api.ChannelCreateResponse{ID: channel.ID}
+	resp = &dto.ChannelCreateResponse{ID: channel.ID}
 	return
 }
 
-func (handler *Handler) joinChannel(ctx *znet.Context, req *api.ChannelJoinRequest) (resp *api.ChannelJoinResponse, err error) {
+func (handler *Handler) joinChannel(ctx *znet.Context, req *dto.ChannelJoinRequest) (resp *dto.ChannelJoinResponse, err error) {
 	uid := handler.currentUser(ctx)
 	err = handler.channelApp.Join(ctx, req.ID, uid)
 	return
 }
-func (handler *Handler) leaveChannel(ctx *znet.Context, req *api.ChannelLeaveRequest) (resp *api.ChannelLeaveResponse, err error) {
+func (handler *Handler) leaveChannel(ctx *znet.Context, req *dto.ChannelLeaveRequest) (resp *dto.ChannelLeaveResponse, err error) {
 	uid := handler.currentUser(ctx)
 	err = handler.channelApp.Leave(ctx, req.ID, uid)
 	return
 }
 
-func (handler *Handler) broadcastChannel(ctx *znet.Context, req *api.ChannelBroadcastRequest) (resp *api.ChannelBroadcastResponse, err error) {
+func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroadcastRequest) (resp *dto.ChannelBroadcastResponse, err error) {
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 
 	uid := handler.currentUser(ctx)

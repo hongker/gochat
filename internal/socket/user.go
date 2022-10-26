@@ -2,13 +2,13 @@ package socket
 
 import (
 	"github.com/ebar-go/znet"
-	"gochat/api"
 	"gochat/internal/application"
 	"gochat/internal/bucket"
+	"gochat/internal/domain/dto"
 )
 
 // login represents user login action
-func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
+func (handler *Handler) login(ctx *znet.Context, req *dto.LoginRequest) (resp *dto.LoginResponse, err error) {
 	user := &application.User{Name: req.Name}
 
 	err = handler.userApp.Auth(ctx, user)
@@ -16,7 +16,7 @@ func (handler *Handler) login(ctx *znet.Context, req *api.LoginRequest) (resp *a
 		return
 	}
 
-	resp = &api.LoginResponse{UID: user.ID}
+	resp = &dto.LoginResponse{UID: user.ID}
 
 	handler.setCurrentUser(ctx, user.ID)
 
