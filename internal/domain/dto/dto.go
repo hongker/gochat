@@ -1,5 +1,16 @@
 package dto
 
+type IDRequest struct {
+	ID string `json:"id"`
+}
+
+type UserResponse struct {
+	Name      string `json:"name"`
+	Avatar    string `json:"avatar"`
+	Sex       string `json:"sex"`
+	Age       int    `json:"age"`
+	CreatedAt int64  `json:"created_at"`
+}
 type LoginRequest struct {
 	Name string `json:"name"`
 }

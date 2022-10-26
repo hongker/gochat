@@ -25,8 +25,25 @@ func (handler *Handler) login(ctx *znet.Context, req *dto.LoginRequest) (resp *d
 }
 
 // updateProfile updates the profile of user
-func (handler *Handler) updateProfile(ctx *znet.Context, req *dto.UserUpdateRequest) (resp *dto.UserUpdateRequest, err error) {
+func (handler *Handler) updateProfile(ctx *znet.Context, req *dto.UserUpdateRequest) (resp *dto.UserUpdateResponse, err error) {
 	err = handler.userApp.Update(ctx, handler.currentUser(ctx), req)
+	return
+}
+
+// findProfile returns the user profile
+func (handler *Handler) findProfile(ctx *znet.Context, req *dto.IDRequest) (resp *dto.UserResponse, err error) {
+	user, err := handler.userApp.Get(ctx, req.ID)
+	if err != nil {
+		return
+	}
+
+	resp = &dto.UserResponse{
+		Name:      user.Name,
+		Avatar:    user.Avatar,
+		Sex:       user.Sex,
+		Age:       user.Age,
+		CreatedAt: user.CreatedAt,
+	}
 	return
 }
 

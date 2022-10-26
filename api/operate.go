@@ -3,7 +3,8 @@ package api
 const (
 	OperateHeartbeat = iota + 1
 	OperateLogin
-	OperateUpdateProfile
+	OperateUpdateUserProfile
+	OperateFindUserProfile
 	OperateListSession
 	OperateSendMessage
 
