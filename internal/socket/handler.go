@@ -41,6 +41,7 @@ func (handler *Handler) Install(router *znet.Router) {
 		component.Provider().Logger().Errorf("[%s] error: %v", ctx.Conn().ID(), err)
 	})
 	router.Route(api.OperateLogin, znet.StandardHandler[dto.LoginRequest, dto.LoginResponse](handler.login))
+	router.Route(api.OperateUpdateProfile, znet.StandardHandler[dto.UserUpdateRequest, dto.UserUpdateResponse](handler.updateProfile))
 	router.Route(api.OperateHeartbeat, znet.StandardHandler[dto.HeartbeatRequest, dto.HeartbeatResponse](handler.heartbeat))
 	router.Route(api.OperateListSession, znet.StandardHandler[dto.SessionListRequest, dto.SessionListResponse](handler.listSession))
 	router.Route(api.OperateSendMessage, znet.StandardHandler[dto.MessageSendRequest, dto.MessageSendResponse](handler.sendMessage))

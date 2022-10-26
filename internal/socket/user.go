@@ -24,6 +24,12 @@ func (handler *Handler) login(ctx *znet.Context, req *dto.LoginRequest) (resp *d
 	return
 }
 
+// updateProfile updates the profile of user
+func (handler *Handler) updateProfile(ctx *znet.Context, req *dto.UserUpdateRequest) (resp *dto.UserUpdateRequest, err error) {
+	err = handler.userApp.Update(ctx, handler.currentUser(ctx), req)
+	return
+}
+
 const (
 	userIdKey = "uid"
 )

@@ -8,6 +8,14 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+type UserUpdateRequest struct {
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Sex    string `json:"sex"`
+	Age    int    `json:"age"`
+}
+type UserUpdateResponse struct{}
+
 type HeartbeatRequest struct{}
 type HeartbeatResponse struct {
 	ServerTime int64 `json:"server_time"`
