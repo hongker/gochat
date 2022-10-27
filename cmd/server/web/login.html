@@ -57,7 +57,7 @@
         headerView.setInt16(seqOffset, 1);
         var buf = mergeArrayBuffer(headerBuf, bodyBuf)
         console.log(buf);
-        ws.send("99999999");
+        ws.send(buf);
 
         // appendMsg("send: auth token: " + token);
     }
