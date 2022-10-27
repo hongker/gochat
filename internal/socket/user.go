@@ -2,6 +2,7 @@ package socket
 
 import (
 	"github.com/ebar-go/znet"
+	uuid "github.com/satori/go.uuid"
 	"gochat/internal/application"
 	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
@@ -20,7 +21,7 @@ func (handler *Handler) login(ctx *znet.Context, req *dto.LoginRequest) (resp *d
 
 	handler.bucket.AddSession(bucket.NewSession(user.ID, ctx.Conn()))
 
-	resp = &dto.LoginResponse{UID: user.ID}
+	resp = &dto.LoginResponse{UID: user.ID, Token: uuid.NewV4().String()}
 	return
 }
 
