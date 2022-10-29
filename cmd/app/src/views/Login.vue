@@ -112,6 +112,8 @@ export default {
       headerView.setInt16(seqOffset, 1);
       var buf = that.mergeArrayBuffer(headerBuf, bodyBuf)
       that.ws.send(buf);
+
+      that.$router.push({path:'/home'})
     }
   }
 }
