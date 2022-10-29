@@ -12,6 +12,7 @@ const connectSocket = (topic) => {
         return client
     } else {
         client = new WebSocket(wsUrl)
+        client.binaryType = 'arraybuffer';
     }
     return client
 

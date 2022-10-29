@@ -6,26 +6,7 @@ const ws = socket()
 
 <template>
 
-  <link rel="icon" type="image/png" href="src/static/images/icons/favicon.ico"/>
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/vendor/bootstrap/css/bootstrap.min.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/fonts/iconic/css/material-design-iconic-font.min.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/vendor/animate/animate.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/vendor/css-hamburgers/hamburgers.min.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/vendor/animsition/css/animsition.min.css">
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/vendor/select2/select2.min.css">
-  <!--===============================================================================================-->
-  <!--	<link rel="stylesheet" type="text/css" href="src/static/vendor/daterangepicker/daterangepicker.css">-->
-  <!--===============================================================================================-->
-  <link rel="stylesheet" type="text/css" href="src/static/css/util.css">
-  <link rel="stylesheet" type="text/css" href="src/static/css/main.css">
+
   
   <div class="limiter" id="vue">
     <div class="container-login100" style="background-image: url('src/static/images/bg-01.jpg');">
@@ -99,6 +80,38 @@ export default {
   methods: {
     test() {
       console.log("Hello")
+    },
+    mergeArrayBuffer(ab1, ab2) {
+      var u81 = new Uint8Array(ab1),
+          u82 = new Uint8Array(ab2),
+          res = new Uint8Array(ab1.byteLength + ab2.byteLength);
+      res.set(u81, 0);
+      res.set(u82, ab1.byteLength);
+      return res.buffer;
+    },
+    submit() {
+      console.log("vue submit")
+
+      var that = this;
+
+      const rawHeaderLen = 10;
+      const packetOffset = 0;
+      const opOffset = 4;
+      const contentTypeOffset = 6;
+      const seqOffset = 8;
+      var textEncoder = new TextEncoder();
+
+
+      var token = '{"name":"foo"}'
+      var headerBuf = new ArrayBuffer(rawHeaderLen);
+      var headerView = new DataView(headerBuf, 0);
+      var bodyBuf = textEncoder.encode(token);
+      headerView.setInt32(packetOffset, rawHeaderLen + bodyBuf.byteLength);
+      headerView.setInt16(opOffset, 2);
+      headerView.setInt16(contentTypeOffset, 1);
+      headerView.setInt16(seqOffset, 1);
+      var buf = that.mergeArrayBuffer(headerBuf, bodyBuf)
+      that.ws.send(buf);
     }
   }
 }
