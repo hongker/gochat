@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-wrapper d-lg-flex" id="vue">
+  <div class="layout-wrapper d-lg-flex">
 
     <!-- Start left sidebar-menu -->
     <div class="side-menu flex-lg-column mr-lg-1">
@@ -114,10 +114,10 @@
 
             <div class="text-center p-4 border-bottom">
               <div class="mb-4">
-                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img :src="user.avatar" class="rounded-circle avatar-lg img-thumbnail" alt="">
               </div>
 
-              <h5 class="font-size-16 mb-1 text-truncate">Patricia Smith</h5>
+              <h5 class="font-size-16 mb-1 text-truncate">{{user.name}}</h5>
               <p class="text-muted text-truncate mb-1"><i class="ri-record-circle-fill font-size-10 text-success mr-1 d-inline-block"></i> Active</p>
             </div>
             <!-- End profile user -->
@@ -145,22 +145,22 @@
 
                       <div>
                         <p class="text-muted mb-1">Name</p>
-                        <h5 class="font-size-14">Patricia Smith</h5>
+                        <h5 class="font-size-14">{{user.name}}</h5>
                       </div>
 
                       <div class="mt-4">
                         <p class="text-muted mb-1">Email</p>
-                        <h5 class="font-size-14">adc@123.com</h5>
+                        <h5 class="font-size-14">{{user.email}}</h5>
                       </div>
 
                       <div class="mt-4">
                         <p class="text-muted mb-1">Time</p>
-                        <h5 class="font-size-14">11:40 AM</h5>
+                        <h5 class="font-size-14">{{ user.time }}</h5>
                       </div>
 
                       <div class="mt-4">
                         <p class="text-muted mb-1">Location</p>
-                        <h5 class="font-size-14 mb-0">California, USA</h5>
+                        <h5 class="font-size-14 mb-0">{{user.location}}</h5>
                       </div>
                     </div>
                   </div>
@@ -2501,9 +2501,85 @@
 </template>
 
 <script>
+
+import {userStore} from "../stores/counter";
+import {connectSocket} from "../utils/ws";
+
 export default {
   name: "Home",
+  inject: ["operation"],
+  data() {
+    return {
+      textEncoder : new TextEncoder(),
+      textDecoder: new TextDecoder(),
+      packet : {
+        rawHeaderLen: 10,
+        packetOffset: 0,
+        opOffset: 4,
+        contentTypeOffset: 6,
+        seqOffset: 8,
+      },
+
+      user: {
+        name : "Patricia Smith",
+        avatar: "/src/assets/static/picture/avatar-1.jpg",
+        email:"adc@123.com",
+        location: "California, USA",
+        time: "11:40 AM",
+      }
+    }
+  },
   mounted() {
+    const ws = connectSocket('ws://127.0.0.1:8082')
+
+    ws.onopen = () => {
+      let user = userStore()
+      this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
+    }
+    ws.onmessage = ({ data }) => {
+      var dataView = new DataView(data, 0);
+      var packetLen = dataView.getInt32(this.packet.packetOffset);
+      var op = dataView.getInt16(this.packet.opOffset);
+      var contentType = dataView.getInt16(this.packet.contentTypeOffset);
+      var seq = dataView.getInt16(this.packet.seqOffset);
+      var msgBody = this.textDecoder.decode(data.slice(this.packet.rawHeaderLen, packetLen));
+
+      console.log("receiveHeader: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
+
+      switch (op) {
+        case this.operation.connect:
+          break
+        case this.operation.profile:
+          break
+        default:
+          console.log("unknown operation")
+      }
+
+    }
+
+  },
+  methods : {
+    mergeArrayBuffer(ab1, ab2) {
+      var u81 = new Uint8Array(ab1),
+          u82 = new Uint8Array(ab2),
+          res = new Uint8Array(ab1.byteLength + ab2.byteLength);
+      res.set(u81, 0);
+      res.set(u82, ab1.byteLength);
+      return res.buffer;
+    },
+    sendSocketMessage(operate, any)  {
+      var headerBuf = new ArrayBuffer(this.packet.rawHeaderLen);
+      var headerView = new DataView(headerBuf, 0);
+      var bodyBuf = this.textEncoder.encode(JSON.stringify(any));
+      headerView.setInt32(this.packet.packetOffset, this.packet.rawHeaderLen + bodyBuf.byteLength);
+      headerView.setInt16(this.packet.opOffset, operate);
+      headerView.setInt16(this.packet.contentTypeOffset, 1);
+      headerView.setInt16(this.packet.seqOffset, 1);
+      var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
+
+      let ws = connectSocket()
+      ws.send(buf)
+    }
 
   }
 }

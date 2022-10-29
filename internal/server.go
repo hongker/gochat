@@ -21,7 +21,9 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 		defer runtime.HandleCrash()
 		ego.NewHTTPServer(":8080").
 			EnableReleaseMode().
+			EnableCorsMiddleware().
 			EnablePprofHandler().
+			EnableAvailableHealthCheck().
 			RegisterRouteLoader(http.NewHandler().Install).
 			Serve(httpContext.Done())
 	}()

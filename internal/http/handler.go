@@ -1,31 +1,28 @@
 package http
 
 import (
+	"context"
+	"github.com/ebar-go/ego/errors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
+	"gochat/internal/application"
+	"gochat/internal/domain/dto"
 	"os"
 	"strings"
 )
 
-type Handler struct{}
+type Handler struct {
+	userApp *application.UserApplication
+}
 
 func NewHandler() *Handler {
-	return &Handler{}
+	return &Handler{
+		userApp: application.NewUserApplication(),
+	}
 }
 func (handler *Handler) Install(router *gin.Engine) {
-	//router.LoadHTMLFiles("web/login.html", "web/index.html", "web/dark.html")
-	//router.StaticFS("/web/static", http.Dir("./web/static"))
-	//
-	//router.GET("/web/login", func(ctx *gin.Context) {
-	//	ctx.HTML(http.StatusOK, "login.html", gin.H{})
-	//})
-	//router.GET("/web/index", func(ctx *gin.Context) {
-	//	ctx.HTML(http.StatusOK, "index.html", gin.H{})
-	//})
-	//router.GET("/web/dark", func(ctx *gin.Context) {
-	//	ctx.HTML(http.StatusOK, "dark.html", gin.H{})
-	//})
-
+	router.POST("/user/auth", convertAction[dto.LoginRequest, dto.LoginResponse](handler.login))
 	router.Use(static.Serve("/", static.LocalFile("app/dist", true)))
 	router.NoRoute(func(ctx *gin.Context) {
 		accept := ctx.Request.Header.Get("Accept")
@@ -41,4 +38,39 @@ func (handler *Handler) Install(router *gin.Engine) {
 			ctx.Writer.Flush()
 		}
 	})
+
+}
+
+func (handler *Handler) login(ctx context.Context, req *dto.LoginRequest) (resp *dto.LoginResponse, err error) {
+	user := &application.User{Name: req.Name}
+
+	err = handler.userApp.Auth(ctx, user)
+	if err != nil {
+		return
+	}
+	resp = &dto.LoginResponse{UID: user.ID, Token: uuid.NewV4().String()}
+	return
+}
+
+type Result struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data any    `json:"data"`
+}
+
+func convertAction[Request, Response any](action func(ctx context.Context, req *Request) (*Response, error)) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		req := new(Request)
+		resp, err := action(ctx, req)
+
+		result := Result{Data: resp}
+		if err != nil {
+			e := errors.Convert(err)
+			result.Code = e.Code()
+			result.Msg = e.Message()
+		}
+
+		ctx.JSON(200, result)
+
+	}
 }

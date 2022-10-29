@@ -1,5 +1,5 @@
 <script setup>
-
+import {get, sendRequest} from "../utils/api";
 </script>
 
 <template>
@@ -65,6 +65,9 @@
 
 
 <script>
+import {sendRequest} from "../utils/api";
+import {userStore} from "../stores/counter";
+
 export default {
   name: "Login",
   data() {
@@ -75,40 +78,30 @@ export default {
 
     }
   },
-  inject: ["socket", "packet", "operation"],
   mounted() {
-
+    this.get("/health").then((response) => {
+      console.log(response)
+    })
   },
   methods: {
-
-    mergeArrayBuffer(ab1, ab2) {
-      var u81 = new Uint8Array(ab1),
-          u82 = new Uint8Array(ab2),
-          res = new Uint8Array(ab1.byteLength + ab2.byteLength);
-      res.set(u81, 0);
-      res.set(u82, ab1.byteLength);
-      return res.buffer;
-    },
     submit() {
       var that = this;
-      console.log("vue submit")
+      console.log("vue submit");
 
-      var textEncoder = new TextEncoder();
-      var headerBuf = new ArrayBuffer(this.packet.rawHeaderLen);
-      var headerView = new DataView(headerBuf, 0);
-      var bodyBuf = textEncoder.encode(JSON.stringify(this.user));
-      headerView.setInt32(this.packet.packetOffset, this.packet.rawHeaderLen + bodyBuf.byteLength);
-      headerView.setInt16(this.packet.opOffset, this.operation.login);
-      headerView.setInt16(this.packet.contentTypeOffset, 1);
-      headerView.setInt16(this.packet.seqOffset, 1);
-      var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
+      this.sendRequest("/user/auth", this.user).then((res) => {
+        if (res.code === 0) {
+          let store = userStore();
+          store.changeUid(res.data.uid);
+          store.changeToken(res.data.token)
 
-      var ws = this.socket()
-      ws.send(buf);
+          setTimeout(function () {
+            that.$router.push({path:'/'})
+          }, 1000)
+        }
+      })
 
-      setTimeout(function () {
-        that.$router.push({path:'/'})
-      }, 2000)
+
+
 
 
     }

@@ -14,9 +14,11 @@ type UserApplication struct {
 	generator  gen.IDGenerator
 }
 
+var userCollection = cmap.NewContainer[string, *User]()
+
 func NewUserApplication() *UserApplication {
 	return &UserApplication{
-		collection: cmap.NewContainer[string, *User](),
+		collection: userCollection,
 		generator:  gen.NewSnowFlakeGenerator(),
 	}
 }
@@ -25,8 +27,9 @@ type User struct {
 	ID        string
 	Name      string
 	Avatar    string
-	Sex       string
-	Age       int
+	Email     string
+	Location  string
+	Status    string
 	CreatedAt int64
 }
 
@@ -42,7 +45,7 @@ func (app *UserApplication) Auth(ctx context.Context, user *User) error {
 func (app *UserApplication) Get(ctx context.Context, uid string) (*User, error) {
 	user, exist := app.collection.Get(uid)
 	if !exist {
-		return nil, errors.NotFound("user not found")
+		return nil, errors.NotFound("user not found: %s", uid)
 	}
 	return user, nil
 }
@@ -55,8 +58,8 @@ func (app *UserApplication) Update(ctx context.Context, uid string, req *dto.Use
 
 	user.Name = req.Name
 	user.Avatar = req.Avatar
-	user.Sex = req.Sex
-	user.Age = req.Age
+	user.Location = req.Location
+	user.Email = req.Email
 
 	app.collection.Set(user.ID, user)
 	return nil

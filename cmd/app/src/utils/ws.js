@@ -1,12 +1,12 @@
+import {userStore} from "../stores/counter";
+
 /**
  * @description 创建实例并
  * @param {*} topic topic
  * @returns websocket实例
  */
 let client = null
-const connectSocket = (topic) => {
-    const baseUrl = import.meta.env.VITE_APP_WS_URL
-    const wsUrl = `ws://127.0.0.1:8082`
+export const connectSocket = (wsUrl) => {
     if (client) {
         console.log(client);
         return client
@@ -18,4 +18,3 @@ const connectSocket = (topic) => {
 
 }
 
-export default connectSocket

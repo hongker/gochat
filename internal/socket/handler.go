@@ -40,7 +40,7 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.OnError(func(ctx *znet.Context, err error) {
 		component.Provider().Logger().Errorf("[%s] error: %v", ctx.Conn().ID(), err)
 	})
-	router.Route(api.OperateLogin, znet.StandardHandler[dto.LoginRequest, dto.LoginResponse](handler.login))
+	router.Route(api.OperateConnect, znet.StandardHandler[dto.ConnectRequest, dto.ConnectResponse](handler.connect))
 	router.Route(api.OperateFindUserProfile, znet.StandardHandler[dto.IDRequest, dto.UserResponse](handler.findProfile))
 	router.Route(api.OperateUpdateUserProfile, znet.StandardHandler[dto.UserUpdateRequest, dto.UserUpdateResponse](handler.updateProfile))
 	router.Route(api.OperateHeartbeat, znet.StandardHandler[dto.HeartbeatRequest, dto.HeartbeatResponse](handler.heartbeat))

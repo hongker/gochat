@@ -16,13 +16,26 @@ export const useCounterStore = defineStore('counter', () => {
 export const userStore = defineStore('user', {
   state: () => ({
     uid:'',
+    token : '',
   }),
   actions: {
     changeUid(id) {
       this.uid = id
+    },
+    changeToken(t) {
+      this.token = t
     }
   },
   persist: {
     enabled: true,
   }
+})
+
+export const profileStore = defineStore('profile', () => {
+  let name = ''
+  function setName(str) {
+    name = str
+  }
+
+  return {name, setName}
 })

@@ -15,7 +15,7 @@ func (handler *Handler) WriteRequestLog(ctx *znet.Context) {
 // CheckLogin validates the login credentials
 func (handler *Handler) CheckLogin(ctx *znet.Context) {
 	// skip when operate is Login
-	if ctx.Request().Header.Operate == api.OperateLogin {
+	if ctx.Request().Header.Operate == api.OperateConnect {
 		ctx.Next()
 		return
 	}

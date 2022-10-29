@@ -2,26 +2,17 @@ package socket
 
 import (
 	"github.com/ebar-go/znet"
-	uuid "github.com/satori/go.uuid"
-	"gochat/internal/application"
 	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
 )
 
-// login represents user login action
-func (handler *Handler) login(ctx *znet.Context, req *dto.LoginRequest) (resp *dto.LoginResponse, err error) {
-	user := &application.User{Name: req.Name}
+// connect represents user connect action
+func (handler *Handler) connect(ctx *znet.Context, req *dto.ConnectRequest) (resp *dto.ConnectResponse, err error) {
 
-	err = handler.userApp.Auth(ctx, user)
-	if err != nil {
-		return
-	}
+	handler.setCurrentUser(ctx, req.UID)
 
-	handler.setCurrentUser(ctx, user.ID)
+	handler.bucket.AddSession(bucket.NewSession(req.UID, ctx.Conn()))
 
-	handler.bucket.AddSession(bucket.NewSession(user.ID, ctx.Conn()))
-
-	resp = &dto.LoginResponse{UID: user.ID, Token: uuid.NewV4().String()}
 	return
 }
 
@@ -41,8 +32,8 @@ func (handler *Handler) findProfile(ctx *znet.Context, req *dto.IDRequest) (resp
 	resp = &dto.UserResponse{
 		Name:      user.Name,
 		Avatar:    user.Avatar,
-		Sex:       user.Sex,
-		Age:       user.Age,
+		Email:     user.Email,
+		Location:  user.Location,
 		CreatedAt: user.CreatedAt,
 	}
 	return

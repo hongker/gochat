@@ -6,9 +6,10 @@ type IDRequest struct {
 
 type UserResponse struct {
 	Name      string `json:"name"`
+	Email     string `json:"email"`
 	Avatar    string `json:"avatar"`
-	Sex       string `json:"sex"`
-	Age       int    `json:"age"`
+	Location  string `json:"location"`
+	Status    string `json:"status"`
 	CreatedAt int64  `json:"created_at"`
 }
 type LoginRequest struct {
@@ -19,11 +20,17 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+type ConnectRequest struct {
+	UID   string `json:"uid"`
+	Token string `json:"token"`
+}
+type ConnectResponse struct{}
+
 type UserUpdateRequest struct {
-	Name   string `json:"name"`
-	Avatar string `json:"avatar"`
-	Sex    string `json:"sex"`
-	Age    int    `json:"age"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Avatar   string `json:"avatar"`
+	Location string `json:"location"`
 }
 type UserUpdateResponse struct{}
 
