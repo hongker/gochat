@@ -2531,10 +2531,12 @@ export default {
   },
   mounted() {
     const ws = connectSocket('ws://127.0.0.1:8082')
-
+    var that = this
     ws.onopen = () => {
       let user = userStore()
+      that.user.uid = user.uid
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
+
     }
     ws.onmessage = ({ data }) => {
       var dataView = new DataView(data, 0);
@@ -2548,8 +2550,11 @@ export default {
 
       switch (op) {
         case this.operation.connect:
+          this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
           break
         case this.operation.profile:
+          let profile = JSON.parse(msgBody)
+          this.user.location = profile.location
           break
         default:
           console.log("unknown operation")
