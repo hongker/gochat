@@ -56,7 +56,7 @@ func (app *UserApplication) Update(ctx context.Context, uid string, req *dto.Use
 		return err
 	}
 
-	user.Name = req.Name
+	//user.Name = req.Name
 	user.Avatar = req.Avatar
 	user.Location = req.Location
 	user.Email = req.Email

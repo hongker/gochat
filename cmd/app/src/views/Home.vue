@@ -114,7 +114,7 @@
 
             <div class="text-center p-4 border-bottom">
               <div class="mb-4">
-                <img :src="user.avatar" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
               </div>
 
               <h5 class="font-size-16 mb-1 text-truncate">{{user.name}}</h5>
@@ -1609,17 +1609,20 @@
                     <div class="card-body">
 
                       <div class="float-right">
-                        <button type="button" class="btn btn-light btn-sm"><i class="ri-edit-fill mr-1 align-middle"></i> Edit</button>
+                        <button type="button" v-if="updateProfileInputShow" @click="updateProfile" :disabled="updateProfileButtonDisabled" class="btn btn-light btn-sm"><i class="ri-save-fill mr-1 align-middle"></i> Save</button>
+                        <button type="button" v-else @click="showUpdateProfileInput" class="btn btn-light btn-sm"><i class="ri-edit-fill mr-1 align-middle"></i> Edit</button>
+
                       </div>
 
                       <div>
                         <p class="text-muted mb-1">Name</p>
-                        <h5 class="font-size-14">Patricia Smith</h5>
+                        <h5 class="font-size-14">{{user.name}}</h5>
                       </div>
 
                       <div class="mt-4">
                         <p class="text-muted mb-1">Email</p>
-                        <h5 class="font-size-14">adc@123.com</h5>
+                        <input class="form-control" v-if="updateProfileInputShow" placeholder="email" v-model="user.email"/>
+                        <h5 class="font-size-14" v-else>{{ user.email }}</h5>
                       </div>
 
                       <div class="mt-4">
@@ -1629,7 +1632,8 @@
 
                       <div class="mt-4">
                         <p class="text-muted mb-1">Location</p>
-                        <h5 class="font-size-14 mb-0">California, USA</h5>
+                        <input class="form-control" v-if="updateProfileInputShow" placeholder="location" v-model="user.location"/>
+                        <h5 class="font-size-14 mb-0" v-else>{{user.location}}</h5>
                       </div>
                     </div>
                   </div>
@@ -2522,11 +2526,13 @@ export default {
 
       user: {
         name : "Patricia Smith",
-        avatar: "/src/assets/static/picture/avatar-1.jpg",
+        avatar: "",
         email:"adc@123.com",
         location: "California, USA",
         time: "11:40 AM",
-      }
+      },
+      updateProfileInputShow: false,
+      updateProfileButtonDisabled: false,
     }
   },
   mounted() {
@@ -2546,7 +2552,7 @@ export default {
       var seq = dataView.getInt16(this.packet.seqOffset);
       var msgBody = this.textDecoder.decode(data.slice(this.packet.rawHeaderLen, packetLen));
 
-      console.log("receiveHeader: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
+      console.log("header: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
 
       switch (op) {
         case this.operation.connect:
@@ -2555,6 +2561,13 @@ export default {
         case this.operation.profile:
           let profile = JSON.parse(msgBody)
           this.user.location = profile.location
+          // this.user.avatar = profile.avatar
+          this.user.email = profile.email
+          this.user.name = profile.name
+          break
+        case this.operation.updateProfile:
+          this.updateProfileButtonDisabled = false
+          this.updateProfileInputShow = false
           break
         default:
           console.log("unknown operation")
@@ -2564,6 +2577,14 @@ export default {
 
   },
   methods : {
+    showUpdateProfileInput() {
+
+        this.updateProfileInputShow = true
+    },
+    updateProfile() {
+      this.updateProfileButtonDisabled = true
+      this.sendSocketMessage(this.operation.updateProfile, this.user)
+    },
     mergeArrayBuffer(ab1, ab2) {
       var u81 = new Uint8Array(ab1),
           u82 = new Uint8Array(ab2),

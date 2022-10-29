@@ -61,6 +61,11 @@ type Result struct {
 func convertAction[Request, Response any](action func(ctx context.Context, req *Request) (*Response, error)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := new(Request)
+		if err := ctx.ShouldBind(req); err != nil {
+			ctx.JSON(200, Result{Code: 1001, Msg: "invalid param"})
+			ctx.Abort()
+			return
+		}
 		resp, err := action(ctx, req)
 
 		result := Result{Data: resp}

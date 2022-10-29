@@ -1,5 +1,4 @@
 <script setup>
-import {get, sendRequest} from "../utils/api";
 </script>
 
 <template>
@@ -79,16 +78,14 @@ export default {
     }
   },
   mounted() {
-    this.get("/health").then((response) => {
-      console.log(response)
-    })
+
   },
   methods: {
     submit() {
       var that = this;
       console.log("vue submit");
 
-      this.sendRequest("/user/auth", this.user).then((res) => {
+      sendRequest("/user/auth", this.user).then((res) => {
         if (res.code === 0) {
           let store = userStore();
           store.changeUid(res.data.uid);
