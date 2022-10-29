@@ -65,7 +65,6 @@
 
 
 <script>
-
 export default {
   name: "Login",
   data() {
@@ -78,7 +77,7 @@ export default {
   },
   inject: ["socket", "packet", "operation"],
   mounted() {
-    console.log(this.packet)
+
   },
   methods: {
 
@@ -91,6 +90,7 @@ export default {
       return res.buffer;
     },
     submit() {
+      var that = this;
       console.log("vue submit")
 
       var textEncoder = new TextEncoder();
@@ -106,7 +106,11 @@ export default {
       var ws = this.socket()
       ws.send(buf);
 
-      this.$router.push({path:'/'})
+      setTimeout(function () {
+        that.$router.push({path:'/'})
+      }, 2000)
+
+
     }
   }
 }

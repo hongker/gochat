@@ -1,5 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { storeToRefs } from 'pinia'
+
 
 export const useCounterStore = defineStore('counter', () => {
   const count = ref(0)
@@ -9,4 +11,18 @@ export const useCounterStore = defineStore('counter', () => {
   }
 
   return { count, doubleCount, increment }
+})
+
+export const userStore = defineStore('user', {
+  state: () => ({
+    uid:'',
+  }),
+  actions: {
+    changeUid(id) {
+      this.uid = id
+    }
+  },
+  persist: {
+    enabled: true,
+  }
 })

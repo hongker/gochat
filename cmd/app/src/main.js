@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import piniaPluginPersist from 'pinia-plugin-persist'
 
 // import './assets/main.css'
 import socket from './utils/ws'
@@ -13,7 +14,9 @@ import socket from './utils/ws'
 const app = createApp(App)
 
 // app.use(ElementUI)
-app.use(createPinia())
+const store = createPinia()
+store.use(piniaPluginPersist)
+app.use(store)
 app.use(router)
 app.provide('socket', socket)
 app.provide('packet', {

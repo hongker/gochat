@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 
 import { onMounted, inject } from 'vue'
+import {userStore} from "./stores/counter";
 onMounted(() => {
   const socket = inject('socket')
   const packet = inject('packet')
@@ -27,6 +28,10 @@ onMounted(() => {
     switch (op) {
       case operation.login:
         console.log("login success");
+        let user = JSON.parse(msgBody);
+        let store = userStore();
+        store.changeUid(user.uid);
+
         break;
       default:
         console.log("unknown operation")
