@@ -6,7 +6,7 @@
 let client = null
 const connectSocket = (topic) => {
     const baseUrl = import.meta.env.VITE_APP_WS_URL
-    const wsUrl = `ws://${baseUrl}/${topic}/`
+    const wsUrl = `ws://127.0.0.1:8082`
     if (client) {
         console.log(client);
         return client
