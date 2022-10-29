@@ -13,7 +13,7 @@
 
           <div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
             <span class="label-input100">Username</span>
-            <input class="input100" type="text" name="username" v-model="username" placeholder="Type your username">
+            <input class="input100" type="text" name="username" v-model="user.name" placeholder="Type your username">
             <span class="focus-input100" data-symbol="&#xf206;"></span>
           </div>
 
@@ -70,14 +70,18 @@ export default {
   name: "Login",
   data() {
     return {
-      username: "admin",
+      user : {
+        name: "admin",
+      }
+
     }
   },
-  inject: ["socket"],
+  inject: ["socket", "packet", "operation"],
+  mounted() {
+    console.log(this.packet)
+  },
   methods: {
-    test() {
-      console.log("Hello")
-    },
+
     mergeArrayBuffer(ab1, ab2) {
       var u81 = new Uint8Array(ab1),
           u82 = new Uint8Array(ab2),
@@ -87,34 +91,22 @@ export default {
       return res.buffer;
     },
     submit() {
-
-
       console.log("vue submit")
 
-      var that = this;
-
-      const rawHeaderLen = 10;
-      const packetOffset = 0;
-      const opOffset = 4;
-      const contentTypeOffset = 6;
-      const seqOffset = 8;
       var textEncoder = new TextEncoder();
-
-
-      var token = '{"name":"foo"}'
-      var headerBuf = new ArrayBuffer(rawHeaderLen);
+      var headerBuf = new ArrayBuffer(this.packet.rawHeaderLen);
       var headerView = new DataView(headerBuf, 0);
-      var bodyBuf = textEncoder.encode(token);
-      headerView.setInt32(packetOffset, rawHeaderLen + bodyBuf.byteLength);
-      headerView.setInt16(opOffset, 2);
-      headerView.setInt16(contentTypeOffset, 1);
-      headerView.setInt16(seqOffset, 1);
-      var buf = that.mergeArrayBuffer(headerBuf, bodyBuf)
+      var bodyBuf = textEncoder.encode(JSON.stringify(this.user));
+      headerView.setInt32(this.packet.packetOffset, this.packet.rawHeaderLen + bodyBuf.byteLength);
+      headerView.setInt16(this.packet.opOffset, this.operation.login);
+      headerView.setInt16(this.packet.contentTypeOffset, 1);
+      headerView.setInt16(this.packet.seqOffset, 1);
+      var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
 
       var ws = this.socket()
       ws.send(buf);
 
-      that.$router.push({path:'/'})
+      this.$router.push({path:'/'})
     }
   }
 }

@@ -4,29 +4,33 @@ import { RouterLink, RouterView } from 'vue-router'
 import { onMounted, inject } from 'vue'
 onMounted(() => {
   const socket = inject('socket')
+  const packet = inject('packet')
+  const operation = inject('operation')
   const ws = socket('')
   ws.onopen = () => {
     console.log('init websocket successfully')
   }
 
   var textDecoder = new TextDecoder();
-  const rawHeaderLen = 10;
-  const packetOffset = 0;
-  const opOffset = 4;
-  const contentTypeOffset = 6;
-  const seqOffset = 8;
+
   ws.onmessage = ({ data }) => {
     console.log(data)
     var dataView = new DataView(data, 0);
-    var packetLen = dataView.getInt32(packetOffset);
-    var op = dataView.getInt16(opOffset);
-    var contentType = dataView.getInt16(contentTypeOffset);
-    var seq = dataView.getInt16(seqOffset);
+    var packetLen = dataView.getInt32(packet.packetOffset);
+    var op = dataView.getInt16(packet.opOffset);
+    var contentType = dataView.getInt16(packet.contentTypeOffset);
+    var seq = dataView.getInt16(packet.seqOffset);
+    var msgBody = textDecoder.decode(data.slice(packet.rawHeaderLen, packetLen));
 
-    console.log("receiveHeader: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq);
+    console.log("receiveHeader: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
 
-    var msgBody = textDecoder.decode(data.slice(rawHeaderLen, packetLen));
-    console.log(msgBody)
+    switch (op) {
+      case operation.login:
+        console.log("login success");
+        break;
+      default:
+        console.log("unknown operation")
+    }
   }
 })
 </script>
