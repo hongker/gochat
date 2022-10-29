@@ -42,6 +42,9 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendReque
 		// save user session
 		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: "", Last: msg})
 		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: "", Last: msg})
+
+		handler.userApp.SaveContact(ctx, uid, req.Target)
+		handler.userApp.SaveContact(ctx, req.Target, uid)
 	}
 	return
 }

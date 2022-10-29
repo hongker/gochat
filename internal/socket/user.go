@@ -30,11 +30,31 @@ func (handler *Handler) findProfile(ctx *znet.Context, req *dto.IDRequest) (resp
 	}
 
 	resp = &dto.UserResponse{
+		ID:        req.ID,
 		Name:      user.Name,
 		Avatar:    user.Avatar,
 		Email:     user.Email,
 		Location:  user.Location,
 		CreatedAt: user.CreatedAt,
+	}
+	return
+}
+
+func (handler *Handler) getContacts(ctx *znet.Context, req *dto.ContactQueryRequest) (resp *dto.ContactQueryResponse, err error) {
+	contacts, err := handler.userApp.GetContacts(ctx, handler.currentUser(ctx))
+	if err != nil {
+		return
+	}
+	resp = &dto.ContactQueryResponse{Items: make([]dto.User, 0)}
+	for _, user := range contacts {
+		resp.Items = append(resp.Items, dto.User{
+			ID:        user.ID,
+			Name:      user.Name,
+			Avatar:    user.Avatar,
+			Email:     user.Email,
+			Location:  user.Location,
+			CreatedAt: user.CreatedAt,
+		})
 	}
 	return
 }

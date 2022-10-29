@@ -7,13 +7,13 @@
       <div class="navbar-brand-box">
         <a href="" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="@/assets/static/picture/logo.svg" alt="" height="30">
+                            <img src="/static/picture/logo.svg" alt="" height="30">
                         </span>
         </a>
 
         <a href="" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="@/assets/static/picture/logo.svg" alt="" height="30">
+                            <img src="/static/picture/logo.svg" alt="" height="30">
                         </span>
         </a>
       </div>
@@ -38,7 +38,7 @@
             </a>
           </li>
           <li class="nav-item" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="Contacts">
-            <a class="nav-link" id="pills-contacts-tab" data-toggle="pill" href="#pills-contacts" role="tab">
+            <a @click="queryContacts" class="nav-link" id="pills-contacts-tab" data-toggle="pill" href="#pills-contacts" role="tab">
               <i class="ri-contacts-line"></i>
             </a>
           </li>
@@ -49,7 +49,7 @@
           </li>
           <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none">
             <a class="nav-link dropdown-toggle" href="javascript: void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <img src="@/assets/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+              <img src="/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
             </a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="#">Profile <i class="ri-profile-line float-right text-muted"></i></a>
@@ -72,7 +72,7 @@
 
           <li class="nav-item btn-group dropup profile-user-dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <img src="@/assets/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+              <img src="/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
             </a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="#">Profile <i class="ri-profile-line float-right text-muted"></i></a>
@@ -114,7 +114,7 @@
 
             <div class="text-center p-4 border-bottom">
               <div class="mb-4">
-                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img src="/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
               </div>
 
               <h5 class="font-size-16 mb-1 text-truncate">{{user.name}}</h5>
@@ -370,7 +370,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="@/assets/static/picture/avatar-2.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="/static/picture/avatar-2.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -380,7 +380,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="@/assets/static/picture/avatar-4.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="/static/picture/avatar-4.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -391,7 +391,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="@/assets/static/picture/avatar-5.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="/static/picture/avatar-5.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -402,7 +402,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="@/assets/static/picture/avatar-6.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="/static/picture/avatar-6.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -440,7 +440,7 @@
                       <div class="media">
 
                         <div class="chat-user-img online align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-2.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-2.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
 
@@ -457,7 +457,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -496,7 +496,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img online align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -533,7 +533,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -593,7 +593,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -629,7 +629,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="@/assets/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -1067,17 +1067,17 @@
                       <form>
                         <div class="form-group mb-4">
                           <label for="addcontactemail-input">Email</label>
-                          <input type="email" class="form-control" id="addcontactemail-input" placeholder="Enter Email">
+                          <input v-model="inviteContactRequest.email" type="email" class="form-control" id="addcontactemail-input" placeholder="Enter Email">
                         </div>
                         <div class="form-group">
                           <label for="addcontact-invitemessage-input">Invatation Message</label>
-                          <textarea class="form-control" id="addcontact-invitemessage-input" rows="3" placeholder="Enter Message"></textarea>
+                          <textarea v-model="inviteContactRequest.content" class="form-control" id="addcontact-invitemessage-input" rows="3" placeholder="Enter Message"></textarea>
                         </div>
                       </form>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Invite Contact</button>
+                      <button type="button" class="btn btn-primary" @click="inviteContact" :disabled="inviteContactDisabled">Invite Contact</button>
                     </div>
                   </div>
                 </div>
@@ -1107,10 +1107,10 @@
                 </div>
 
                 <ul class="list-unstyled contact-list">
-                  <li>
+                  <li v-for="(val, key) in contacts.items" :key="key">
                     <div class="media align-items-center">
                       <div class="media-body">
-                        <h5 class="font-size-14 m-0">Albert Rodarte</h5>
+                        <h5 class="font-size-14 m-0">{{val.name}}</h5>
                       </div>
 
                       <div class="dropdown">
@@ -1126,434 +1126,12 @@
                     </div>
                   </li>
 
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Allison Etter</h5>
-                      </div>
 
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
                 </ul>
               </div>
               <!-- end contact list A -->
 
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  C
-                </div>
 
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Craig Smiley</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <!-- end contact list C -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  D
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Daniel Clay</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Doris Brown</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list D -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  I
-                </div>
-
-                <ul class="list-unstyled contact-list">
-
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Iris Wells</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <!-- end contact list I -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  J
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Juan Flakes</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">John Hall</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Joy Southern</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <!-- end contact list J -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  M
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Mary Farmer</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Mark Messer</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Michael Hinton</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list M -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  O
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Ossie Wilson</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list O -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  P
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Phillis Griffin</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Paul Haynes</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list P -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  R
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Rocky Jackson</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list R -->
-
-              <div class="mt-3">
-                <div class="p-3 font-weight-bold text-primary">
-                  S
-                </div>
-
-                <ul class="list-unstyled contact-list">
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Sara Muller</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Simon Velez</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media align-items-center">
-                      <div class="media-body">
-                        <h5 class="font-size-14 m-0">Steve Walker</h5>
-                      </div>
-
-                      <div class="dropdown">
-                        <a href="#" class="text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Block <i class="ri-forbid-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Remove <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              <!-- end contact list S -->
             </div>
             <!-- end contact lists -->
           </div>
@@ -1571,7 +1149,7 @@
 
             <div class="text-center border-bottom p-4">
               <div class="mb-4 profile-user">
-                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img src="/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
                 <button type="button" class="btn bg-light avatar-xs p-0 rounded-circle profile-photo-edit">
                   <i class="ri-pencil-fill"></i>
                 </button>
@@ -1827,7 +1405,7 @@
                     <a href="javascript: void(0);" class="user-chat-remove text-muted font-size-16 p-2"><i class="ri-arrow-left-s-line"></i></a>
                   </div>
                   <div class="mr-3">
-                    <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
+                    <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                   </div>
                   <div class="media-body overflow-hidden">
                     <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">Doris Brown</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
@@ -1882,7 +1460,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
+                    <img src="/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -1913,7 +1491,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
+                    <img src="/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -1951,7 +1529,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
+                    <img src="/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2005,7 +1583,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
+                    <img src="/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2038,7 +1616,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
+                    <img src="/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2048,8 +1626,8 @@
                         <ul class="list-inline message-img  mb-0">
                           <li class="list-inline-item message-img-list">
                             <div>
-                              <a class="popup-img d-inline-block m-1" href="@/assets/static/picture/img-1.jpg" title="Project 1">
-                                <img src="@/assets/static/picture/img-1.jpg" alt="" class="rounded border">
+                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-1.jpg" title="Project 1">
+                                <img src="/static/picture/img-1.jpg" alt="" class="rounded border">
                               </a>
                             </div>
                             <div class="message-img-link">
@@ -2076,8 +1654,8 @@
 
                           <li class="list-inline-item message-img-list">
                             <div>
-                              <a class="popup-img d-inline-block m-1" href="@/assets/static/picture/img-2.jpg" title="Project 2">
-                                <img src="@/assets/static/picture/img-2.jpg" alt="" class="rounded border">
+                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-2.jpg" title="Project 2">
+                                <img src="/static/picture/img-2.jpg" alt="" class="rounded border">
                               </a>
                             </div>
                             <div class="message-img-link">
@@ -2128,7 +1706,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
+                    <img src="/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2196,7 +1774,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
+                    <img src="/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2271,7 +1849,7 @@
 
           <div class="text-center p-4 border-bottom">
             <div class="mb-4">
-              <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+              <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
             </div>
 
             <h5 class="font-size-16 mb-1 text-truncate">Doris Brown</h5>
@@ -2507,13 +2085,13 @@
 <script>
 
 import {userStore} from "../stores/counter";
-import {connectSocket} from "../utils/ws";
 
 export default {
   name: "Home",
-  inject: ["operation"],
+  inject: ["socket", "operation"],
   data() {
     return {
+      ws: {},
       textEncoder : new TextEncoder(),
       textDecoder: new TextDecoder(),
       packet : {
@@ -2522,6 +2100,7 @@ export default {
         opOffset: 4,
         contentTypeOffset: 6,
         seqOffset: 8,
+        seq: 1,
       },
 
       user: {
@@ -2533,18 +2112,27 @@ export default {
       },
       updateProfileInputShow: false,
       updateProfileButtonDisabled: false,
+
+      inviteContactDisabled: false,
+      inviteContactRequest: {
+        email:'',
+        content:'',
+      },
+      contacts: {
+        items: []
+      },
     }
   },
   mounted() {
-    const ws = connectSocket('ws://127.0.0.1:8082')
+    this.ws = this.socket('ws://127.0.0.1:8082')
     var that = this
-    ws.onopen = () => {
+    this.ws.onopen = () => {
       let user = userStore()
       that.user.uid = user.uid
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
 
     }
-    ws.onmessage = ({ data }) => {
+    this.ws.onmessage = ({ data }) => {
       var dataView = new DataView(data, 0);
       var packetLen = dataView.getInt32(this.packet.packetOffset);
       var op = dataView.getInt16(this.packet.opOffset);
@@ -2569,6 +2157,14 @@ export default {
           this.updateProfileButtonDisabled = false
           this.updateProfileInputShow = false
           break
+        case this.operation.sendMessage:
+          this.inviteContactDisabled = false
+          break
+        case this.operation.newMessage:
+          break
+        case this.operation.queryContacts:
+          this.contacts = JSON.parse(msgBody)
+          break
         default:
           console.log("unknown operation")
       }
@@ -2577,6 +2173,17 @@ export default {
 
   },
   methods : {
+    queryContacts() {
+      this.sendSocketMessage(this.operation.queryContacts, {})
+    },
+    inviteContact() {
+      this.inviteContactDisabled = true
+      this.sendSocketMessage(this.operation.sendMessage, {
+        target: this.inviteContactRequest.email,
+        content: this.inviteContactRequest.content,
+        content_type: 'text',
+      })
+    },
     showUpdateProfileInput() {
 
         this.updateProfileInputShow = true
@@ -2600,11 +2207,10 @@ export default {
       headerView.setInt32(this.packet.packetOffset, this.packet.rawHeaderLen + bodyBuf.byteLength);
       headerView.setInt16(this.packet.opOffset, operate);
       headerView.setInt16(this.packet.contentTypeOffset, 1);
-      headerView.setInt16(this.packet.seqOffset, 1);
+      headerView.setInt16(this.packet.seqOffset, this.packet.seq++);
       var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
 
-      let ws = connectSocket()
-      ws.send(buf)
+      this.ws.send(buf)
     }
 
   }

@@ -12,14 +12,17 @@ import (
 type UserApplication struct {
 	collection *cmap.Container[string, *User]
 	generator  gen.IDGenerator
+	contacts   *cmap.Container[string, []string]
 }
 
 var userCollection = cmap.NewContainer[string, *User]()
+var contacts = cmap.NewContainer[string, []string]()
 
 func NewUserApplication() *UserApplication {
 	return &UserApplication{
 		collection: userCollection,
 		generator:  gen.NewSnowFlakeGenerator(),
+		contacts:   contacts,
 	}
 }
 
@@ -63,4 +66,45 @@ func (app *UserApplication) Update(ctx context.Context, uid string, req *dto.Use
 
 	app.collection.Set(user.ID, user)
 	return nil
+}
+
+func (app *UserApplication) GetContacts(ctx context.Context, uid string) (items []*User, err error) {
+	items = make([]*User, 0, 64)
+	ids, exist := app.contacts.Get(uid)
+	if !exist {
+		return
+	}
+
+	for _, id := range ids {
+		user, exist := app.collection.Get(id)
+		if !exist {
+			continue
+		}
+		items = append(items, user)
+	}
+
+	return
+}
+
+func inArray[T comparable](items []T, item T) bool {
+	for _, t := range items {
+		if t == item {
+			return true
+		}
+	}
+
+	return false
+}
+func (app *UserApplication) SaveContact(ctx context.Context, uid string, targetId string) {
+	ids, exist := app.contacts.Get(uid)
+	if !exist {
+		ids = []string{targetId}
+	} else {
+		if inArray[string](ids, targetId) {
+			return
+		}
+		ids = append(ids, targetId)
+	}
+
+	app.contacts.Set(uid, ids)
 }

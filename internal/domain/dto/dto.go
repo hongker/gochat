@@ -4,7 +4,11 @@ type IDRequest struct {
 	ID string `json:"id"`
 }
 
-type UserResponse struct {
+type EmptyRequest struct{}
+
+type UserResponse User
+type User struct {
+	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Email     string `json:"email"`
 	Avatar    string `json:"avatar"`
@@ -91,4 +95,9 @@ type Message struct {
 	Content     string `json:"content"`
 	ContentType string `json:"content_type"`
 	CreatedAt   int64  `json:"created_at"`
+}
+
+type ContactQueryRequest struct{}
+type ContactQueryResponse struct {
+	Items []User `json:"items"`
 }

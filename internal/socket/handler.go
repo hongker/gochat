@@ -53,6 +53,8 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateBroadcastChannel, znet.StandardHandler[dto.ChannelBroadcastRequest, dto.ChannelBroadcastResponse](handler.broadcastChannel))
 
 	router.Route(api.OperateQueryMessage, znet.StandardHandler[dto.MessageQueryRequest, dto.MessageQueryResponse](handler.queryMessage))
+
+	router.Route(api.OperateQueryContact, znet.StandardHandler[dto.ContactQueryRequest, dto.ContactQueryResponse](handler.getContacts))
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {

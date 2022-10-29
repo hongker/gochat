@@ -108,6 +108,6 @@ export default {
 
 <style scoped>
 .container-login100 {
-  background-image: url("@/assets/static/images/bg-01.jpg");
+  background-image: url("/static/images/bg-01.jpg");
 }
 </style>

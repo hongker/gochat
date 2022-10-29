@@ -13,6 +13,8 @@ const (
 	OperateLeaveChannel
 	OperateBroadcastChannel
 	OperateQueryMessage
+
+	OperateQueryContact
 )
 
 const (
