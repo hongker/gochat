@@ -7,13 +7,13 @@
       <div class="navbar-brand-box">
         <a href="" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="/src/static/picture/logo.svg" alt="" height="30">
+                            <img src="@/assets/static/picture/logo.svg" alt="" height="30">
                         </span>
         </a>
 
         <a href="" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="/src/static/picture/logo.svg" alt="" height="30">
+                            <img src="@/assets/static/picture/logo.svg" alt="" height="30">
                         </span>
         </a>
       </div>
@@ -49,7 +49,7 @@
           </li>
           <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none">
             <a class="nav-link dropdown-toggle" href="javascript: void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <img src="/src/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+              <img src="@/assets/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
             </a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="#">Profile <i class="ri-profile-line float-right text-muted"></i></a>
@@ -72,7 +72,7 @@
 
           <li class="nav-item btn-group dropup profile-user-dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <img src="/src/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+              <img src="@/assets/static/picture/avatar-1.jpg" alt="" class="profile-user rounded-circle">
             </a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="#">Profile <i class="ri-profile-line float-right text-muted"></i></a>
@@ -114,7 +114,7 @@
 
             <div class="text-center p-4 border-bottom">
               <div class="mb-4">
-                <img src="/src/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
               </div>
 
               <h5 class="font-size-16 mb-1 text-truncate">Patricia Smith</h5>
@@ -370,7 +370,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="/src/static/picture/avatar-2.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="@/assets/static/picture/avatar-2.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -380,7 +380,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="/src/static/picture/avatar-4.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="@/assets/static/picture/avatar-4.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -391,7 +391,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="/src/static/picture/avatar-5.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="@/assets/static/picture/avatar-5.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -402,7 +402,7 @@
                 <div class="item">
                   <a href="#" class="user-status-box">
                     <div class="avatar-xs mx-auto d-block chat-user-img online">
-                      <img src="/src/static/picture/avatar-6.jpg" alt="user-img" class="img-fluid rounded-circle">
+                      <img src="@/assets/static/picture/avatar-6.jpg" alt="user-img" class="img-fluid rounded-circle">
                       <span class="user-status"></span>
                     </div>
 
@@ -440,7 +440,7 @@
                       <div class="media">
 
                         <div class="chat-user-img online align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-2.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-2.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
 
@@ -457,7 +457,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -496,7 +496,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img online align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -533,7 +533,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -593,7 +593,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -629,7 +629,7 @@
                     <a href="#">
                       <div class="media">
                         <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/src/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">
+                          <img src="@/assets/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
                         </div>
                         <div class="media-body overflow-hidden">
@@ -1571,7 +1571,7 @@
 
             <div class="text-center border-bottom p-4">
               <div class="mb-4 profile-user">
-                <img src="/src/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                <img src="@/assets/static/picture/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
                 <button type="button" class="btn bg-light avatar-xs p-0 rounded-circle profile-photo-edit">
                   <i class="ri-pencil-fill"></i>
                 </button>
@@ -1823,7 +1823,7 @@
                     <a href="javascript: void(0);" class="user-chat-remove text-muted font-size-16 p-2"><i class="ri-arrow-left-s-line"></i></a>
                   </div>
                   <div class="mr-3">
-                    <img src="/src/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
+                    <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                   </div>
                   <div class="media-body overflow-hidden">
                     <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">Doris Brown</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
@@ -1878,7 +1878,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-4.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -1909,7 +1909,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-1.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -1947,7 +1947,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-4.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2001,7 +2001,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-1.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2034,7 +2034,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-4.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2044,8 +2044,8 @@
                         <ul class="list-inline message-img  mb-0">
                           <li class="list-inline-item message-img-list">
                             <div>
-                              <a class="popup-img d-inline-block m-1" href="/src/static/picture/img-1.jpg" title="Project 1">
-                                <img src="/src/static/picture/img-1.jpg" alt="" class="rounded border">
+                              <a class="popup-img d-inline-block m-1" href="@/assets/static/picture/img-1.jpg" title="Project 1">
+                                <img src="@/assets/static/picture/img-1.jpg" alt="" class="rounded border">
                               </a>
                             </div>
                             <div class="message-img-link">
@@ -2072,8 +2072,8 @@
 
                           <li class="list-inline-item message-img-list">
                             <div>
-                              <a class="popup-img d-inline-block m-1" href="/src/static/picture/img-2.jpg" title="Project 2">
-                                <img src="/src/static/picture/img-2.jpg" alt="" class="rounded border">
+                              <a class="popup-img d-inline-block m-1" href="@/assets/static/picture/img-2.jpg" title="Project 2">
+                                <img src="@/assets/static/picture/img-2.jpg" alt="" class="rounded border">
                               </a>
                             </div>
                             <div class="message-img-link">
@@ -2124,7 +2124,7 @@
               <li class="right">
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-1.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-1.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2192,7 +2192,7 @@
               <li>
                 <div class="conversation-list">
                   <div class="chat-avatar">
-                    <img src="/src/static/picture/avatar-4.jpg" alt="">
+                    <img src="@/assets/static/picture/avatar-4.jpg" alt="">
                   </div>
 
                   <div class="user-chat-content">
@@ -2267,7 +2267,7 @@
 
           <div class="text-center p-4 border-bottom">
             <div class="mb-4">
-              <img src="/src/static/picture/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
+              <img src="@/assets/static/picture/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
             </div>
 
             <h5 class="font-size-16 mb-1 text-truncate">Doris Brown</h5>

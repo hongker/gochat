@@ -1,15 +1,10 @@
 <script setup>
-import { inject } from 'vue'
-const socket = inject('socket')
-const ws = socket()
+
 </script>
 
 <template>
-
-
-  
-  <div class="limiter" id="vue">
-    <div class="container-login100" style="background-image: url('/src/static/images/bg-01.jpg');">
+  <div class="limiter">
+    <div class="container-login100">
       <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
         <div class="login100-form validate-form">
 					<span class="login100-form-title p-b-49">
@@ -70,6 +65,7 @@ const ws = socket()
 
 
 <script>
+
 export default {
   name: "Login",
   data() {
@@ -77,6 +73,7 @@ export default {
       username: "admin",
     }
   },
+  inject: ["socket"],
   methods: {
     test() {
       console.log("Hello")
@@ -90,6 +87,8 @@ export default {
       return res.buffer;
     },
     submit() {
+
+
       console.log("vue submit")
 
       var that = this;
@@ -111,14 +110,18 @@ export default {
       headerView.setInt16(contentTypeOffset, 1);
       headerView.setInt16(seqOffset, 1);
       var buf = that.mergeArrayBuffer(headerBuf, bodyBuf)
-      that.ws.send(buf);
 
-      that.$router.push({path:'/home'})
+      var ws = this.socket()
+      ws.send(buf);
+
+      that.$router.push({path:'/'})
     }
   }
 }
 </script>
 
 <style scoped>
-
+.container-login100 {
+  background-image: url("@/assets/static/images/bg-01.jpg");
+}
 </style>
