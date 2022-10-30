@@ -27,6 +27,7 @@ app.provide('operation', {
     sendMessage: 6,
     queryContacts: 12,
     listSession: 5,
+    queryHistory: 11,
     newMessage: 101,
 })
 

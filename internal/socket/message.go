@@ -79,12 +79,17 @@ func (handler *Handler) queryMessage(ctx *znet.Context, req *dto.MessageQueryReq
 
 	resp = &dto.MessageQueryResponse{Items: make([]dto.Message, len(items))}
 	for idx, item := range items {
-		resp.Items[idx] = dto.Message{
+		message := dto.Message{
 			ID:          item.ID,
 			Content:     item.Content,
 			CreatedAt:   item.CreatedAt,
 			ContentType: item.ContentType,
 		}
+		sender, lastErr := handler.userApp.Get(ctx, item.Sender)
+		if lastErr == nil {
+			message.Sender = dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar}
+		}
+		resp.Items[idx] = message
 	}
 	return
 }

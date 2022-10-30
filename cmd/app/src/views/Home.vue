@@ -435,8 +435,8 @@
               <div class="chat-message-list" data-simplebar="">
 
                 <ul class="list-unstyled chat-list chat-user-list">
-                  <li v-for="(item, key) in session.items" :key="key">
-                    <a href="#">
+                  <li v-for="(item, key) in session.items" :key="key" :class="{'active': talkIndex === key}">
+                    <a href="#" @click="queryHistory(key)">
                       <div class="media">
 
                         <div class="chat-user-img online align-self-center mr-3">
@@ -1408,7 +1408,7 @@
                     <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                   </div>
                   <div class="media-body overflow-hidden">
-                    <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">Doris Brown</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
+                    <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">{{session.items.length > 0 ? session.items[talkIndex].title : '' }}</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
                   </div>
                 </div>
               </div>
@@ -1457,7 +1457,7 @@
           <!-- start chat conversation -->
           <div class="chat-conversation p-3 p-lg-4" data-simplebar="init">
             <ul class="list-unstyled mb-0">
-              <li>
+              <li v-for="(item, key) in messages.items" :key="key" :class="{'right' : user.uid === item.sender.id}">
                 <div class="conversation-list">
                   <div class="chat-avatar">
                     <img src="/static/picture/avatar-4.jpg" alt="">
@@ -1467,7 +1467,7 @@
                     <div class="ctext-wrap">
                       <div class="ctext-wrap-content">
                         <p class="mb-0">
-                          Good morning
+                          {{item.content}}
                         </p>
                         <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:00</span></p>
                       </div>
@@ -1483,7 +1483,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="conversation-name">Doris Brown</div>
+                    <div class="conversation-name">{{item.sender.name}}</div>
                   </div>
                 </div>
               </li>
@@ -1526,276 +1526,276 @@
                 </div>
               </li>
 
-              <li>
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-4.jpg" alt="">
-                  </div>
+<!--              <li>-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-4.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
+<!--                  <div class="user-chat-content">-->
 
-                    <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
-                        <p class="mb-0">
-                          Yeah everything is fine
-                        </p>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:05</span></p>
-                      </div>
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="ctext-wrap">-->
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <p class="mb-0">-->
+<!--                          Yeah everything is fine-->
+<!--                        </p>-->
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:05</span></p>-->
+<!--                      </div>-->
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
-                    <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
-                        <p class="mb-0">
-                          & Next meeting tomorrow 10.00AM
-                        </p>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:05</span></p>
-                      </div>
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="ctext-wrap">-->
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <p class="mb-0">-->
+<!--                          & Next meeting tomorrow 10.00AM-->
+<!--                        </p>-->
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:05</span></p>-->
+<!--                      </div>-->
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
-                    <div class="conversation-name">Doris Brown</div>
-                  </div>
+<!--                    <div class="conversation-name">Doris Brown</div>-->
+<!--                  </div>-->
 
-                </div>
-              </li>
+<!--                </div>-->
+<!--              </li>-->
 
-              <li class="right">
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-1.jpg" alt="">
-                  </div>
+<!--              <li class="right">-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-1.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
-                    <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
-                        <p class="mb-0">
-                          Wow that's great
-                        </p>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:06</span></p>
-                      </div>
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
+<!--                  <div class="user-chat-content">-->
+<!--                    <div class="ctext-wrap">-->
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <p class="mb-0">-->
+<!--                          Wow that's great-->
+<!--                        </p>-->
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:06</span></p>-->
+<!--                      </div>-->
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
-                    <div class="conversation-name">Patricia Smith</div>
-                  </div>
+<!--                    <div class="conversation-name">Patricia Smith</div>-->
+<!--                  </div>-->
 
-                </div>
-              </li>
+<!--                </div>-->
+<!--              </li>-->
 
-              <li>
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-4.jpg" alt="">
-                  </div>
+<!--              <li>-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-4.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
-                    <div class="ctext-wrap">
+<!--                  <div class="user-chat-content">-->
+<!--                    <div class="ctext-wrap">-->
 
-                      <div class="ctext-wrap-content">
-                        <ul class="list-inline message-img  mb-0">
-                          <li class="list-inline-item message-img-list">
-                            <div>
-                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-1.jpg" title="Project 1">
-                                <img src="/static/picture/img-1.jpg" alt="" class="rounded border">
-                              </a>
-                            </div>
-                            <div class="message-img-link">
-                              <ul class="list-inline mb-0">
-                                <li class="list-inline-item">
-                                  <a href="#">
-                                    <i class="ri-download-2-line"></i>
-                                  </a>
-                                </li>
-                                <li class="list-inline-item dropdown">
-                                  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="ri-more-fill"></i>
-                                  </a>
-                                  <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </li>
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <ul class="list-inline message-img  mb-0">-->
+<!--                          <li class="list-inline-item message-img-list">-->
+<!--                            <div>-->
+<!--                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-1.jpg" title="Project 1">-->
+<!--                                <img src="/static/picture/img-1.jpg" alt="" class="rounded border">-->
+<!--                              </a>-->
+<!--                            </div>-->
+<!--                            <div class="message-img-link">-->
+<!--                              <ul class="list-inline mb-0">-->
+<!--                                <li class="list-inline-item">-->
+<!--                                  <a href="#">-->
+<!--                                    <i class="ri-download-2-line"></i>-->
+<!--                                  </a>-->
+<!--                                </li>-->
+<!--                                <li class="list-inline-item dropdown">-->
+<!--                                  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                    <i class="ri-more-fill"></i>-->
+<!--                                  </a>-->
+<!--                                  <div class="dropdown-menu">-->
+<!--                                    <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                                  </div>-->
+<!--                                </li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </li>-->
 
-                          <li class="list-inline-item message-img-list">
-                            <div>
-                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-2.jpg" title="Project 2">
-                                <img src="/static/picture/img-2.jpg" alt="" class="rounded border">
-                              </a>
-                            </div>
-                            <div class="message-img-link">
-                              <ul class="list-inline mb-0">
-                                <li class="list-inline-item">
-                                  <a href="#">
-                                    <i class="ri-download-2-line"></i>
-                                  </a>
-                                </li>
-                                <li class="list-inline-item dropdown">
-                                  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="ri-more-fill"></i>
-                                  </a>
-                                  <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </li>
-                        </ul>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:09</span></p>
-                      </div>
+<!--                          <li class="list-inline-item message-img-list">-->
+<!--                            <div>-->
+<!--                              <a class="popup-img d-inline-block m-1" href="/static/picture/img-2.jpg" title="Project 2">-->
+<!--                                <img src="/static/picture/img-2.jpg" alt="" class="rounded border">-->
+<!--                              </a>-->
+<!--                            </div>-->
+<!--                            <div class="message-img-link">-->
+<!--                              <ul class="list-inline mb-0">-->
+<!--                                <li class="list-inline-item">-->
+<!--                                  <a href="#">-->
+<!--                                    <i class="ri-download-2-line"></i>-->
+<!--                                  </a>-->
+<!--                                </li>-->
+<!--                                <li class="list-inline-item dropdown">-->
+<!--                                  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                    <i class="ri-more-fill"></i>-->
+<!--                                  </a>-->
+<!--                                  <div class="dropdown-menu">-->
+<!--                                    <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                                  </div>-->
+<!--                                </li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </li>-->
+<!--                        </ul>-->
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:09</span></p>-->
+<!--                      </div>-->
 
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
 
-                    </div>
+<!--                    </div>-->
 
-                    <div class="conversation-name">Doris Brown</div>
-                  </div>
+<!--                    <div class="conversation-name">Doris Brown</div>-->
+<!--                  </div>-->
 
-                </div>
-              </li>
+<!--                </div>-->
+<!--              </li>-->
 
-              <li class="right">
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-1.jpg" alt="">
-                  </div>
+<!--              <li class="right">-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-1.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
-                    <div class="ctext-wrap">
+<!--                  <div class="user-chat-content">-->
+<!--                    <div class="ctext-wrap">-->
 
-                      <div class="ctext-wrap-content">
-                        <div class="card p-2 mb-2">
-                          <div class="media align-items-center">
-                            <div class="avatar-sm mr-3">
-                              <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
-                                <i class="ri-file-text-fill"></i>
-                              </div>
-                            </div>
-                            <div class="media-body">
-                              <div class="text-left">
-                                <h5 class="font-size-14 mb-1">admin_v1.0.zip</h5>
-                                <p class="text-muted font-size-13 mb-0">12.5 MB</p>
-                              </div>
-                            </div>
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <div class="card p-2 mb-2">-->
+<!--                          <div class="media align-items-center">-->
+<!--                            <div class="avatar-sm mr-3">-->
+<!--                              <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">-->
+<!--                                <i class="ri-file-text-fill"></i>-->
+<!--                              </div>-->
+<!--                            </div>-->
+<!--                            <div class="media-body">-->
+<!--                              <div class="text-left">-->
+<!--                                <h5 class="font-size-14 mb-1">admin_v1.0.zip</h5>-->
+<!--                                <p class="text-muted font-size-13 mb-0">12.5 MB</p>-->
+<!--                              </div>-->
+<!--                            </div>-->
 
-                            <div class="ml-4">
-                              <ul class="list-inline mb-0 font-size-20">
-                                <li class="list-inline-item">
-                                  <a href="#" class="text-muted">
-                                    <i class="ri-download-2-line"></i>
-                                  </a>
-                                </li>
-                                <li class="list-inline-item dropdown">
-                                  <a class="dropdown-toggle text-muted" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="ri-more-fill"></i>
-                                  </a>
-                                  <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>
-                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
+<!--                            <div class="ml-4">-->
+<!--                              <ul class="list-inline mb-0 font-size-20">-->
+<!--                                <li class="list-inline-item">-->
+<!--                                  <a href="#" class="text-muted">-->
+<!--                                    <i class="ri-download-2-line"></i>-->
+<!--                                  </a>-->
+<!--                                </li>-->
+<!--                                <li class="list-inline-item dropdown">-->
+<!--                                  <a class="dropdown-toggle text-muted" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                    <i class="ri-more-fill"></i>-->
+<!--                                  </a>-->
+<!--                                  <div class="dropdown-menu dropdown-menu-right">-->
+<!--                                    <a class="dropdown-item" href="#">Share <i class="ri-share-line float-right text-muted"></i></a>-->
+<!--                                    <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                                  </div>-->
+<!--                                </li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
 
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:16</span></p>
-                      </div>
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:16</span></p>-->
+<!--                      </div>-->
 
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
 
-                    </div>
+<!--                    </div>-->
 
-                    <div class="conversation-name">Patricia Smith</div>
-                  </div>
+<!--                    <div class="conversation-name">Patricia Smith</div>-->
+<!--                  </div>-->
 
-                </div>
-              </li>
+<!--                </div>-->
+<!--              </li>-->
 
-              <li>
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-4.jpg" alt="">
-                  </div>
+<!--              <li>-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-4.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
-                    <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
-                        <p class="mb-0">
-                          typing
-                          <span class="animate-typing">
-                                                            <span class="dot"></span>
-                                                            <span class="dot"></span>
-                                                            <span class="dot"></span>
-                                                        </span>
-                        </p>
-                      </div>
-                    </div>
+<!--                  <div class="user-chat-content">-->
+<!--                    <div class="ctext-wrap">-->
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <p class="mb-0">-->
+<!--                          typing-->
+<!--                          <span class="animate-typing">-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                        </span>-->
+<!--                        </p>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
-                    <div class="conversation-name">Doris Brown</div>
-                  </div>
+<!--                    <div class="conversation-name">Doris Brown</div>-->
+<!--                  </div>-->
 
-                </div>
-              </li>
+<!--                </div>-->
+<!--              </li>-->
 
             </ul>
           </div>
@@ -2123,6 +2123,10 @@ export default {
       },
       session: {
         items: [],
+      },
+      talkIndex: 0,
+      messages: {
+        items: [],
       }
     }
   },
@@ -2171,6 +2175,9 @@ export default {
         case this.operation.listSession:
           this.session = JSON.parse(msgBody)
           break
+        case this.operation.queryHistory:
+          this.messages = JSON.parse(msgBody)
+          break
         default:
           console.log("unknown operation")
       }
@@ -2182,6 +2189,11 @@ export default {
     this.ws.close()
  },
   methods : {
+    queryHistory(index) {
+      this.talkIndex = index
+      let sessionId = this.session.items[index].id
+      this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})
+    },
     listSession() {
       this.sendSocketMessage(this.operation.listSession, {})
     },

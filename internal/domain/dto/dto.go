@@ -96,6 +96,7 @@ type Message struct {
 	Content     string `json:"content"`
 	ContentType string `json:"content_type"`
 	CreatedAt   int64  `json:"created_at"`
+	Sender      User   `json:"sender"`
 }
 
 type ContactQueryRequest struct{}
