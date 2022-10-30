@@ -2160,7 +2160,7 @@ export default {
     queryHistory(sessionId, title) {
       this.currentSessionId = sessionId
       this.currentSessionTitle = title
-      this.sendMessageRequest.type = (sessionId) ? 'group': 'user'
+      this.sendMessageRequest.type = isNaN(sessionId) ? 'group': 'user'
       // this.talkIndex = index
       // let sessionId = this.session.items[index].id
       this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})
@@ -2175,16 +2175,17 @@ export default {
       this.sendSocketMessage(this.operation.queryContacts, {})
     },
     inviteContact() {
-      let that = this
-      this.inviteContactDisabled = true
+      let that = this;
+      that.inviteContactDisabled = true
       this.sendSocketMessage(this.operation.sendMessage, {
         target: this.inviteContactRequest.email,
         content: this.inviteContactRequest.content,
         content_type: 'text',
       })
       setTimeout(function () {
-        that.inviteContactRequest = false
+        that.inviteContactDisabled = false
         that.inviteContactDialogShow = false
+        that.queryContacts()
       }, 500)
 
     },
