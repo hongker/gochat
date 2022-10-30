@@ -22,6 +22,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 		item := dto.Session{
 			ID:    session.ID,
 			Title: session.Title,
+			Type:  api.SessionTypeUser,
 		}
 		if session.Last != nil {
 			item.Last = dto.Message{
@@ -40,6 +41,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 		item := dto.Session{
 			ID:    channel.ID,
 			Title: channel.Name,
+			Type:  api.SessionTypeGroup,
 		}
 		last := handler.messageApp.GetLast(ctx, item.ID)
 		if last != nil {

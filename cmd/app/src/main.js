@@ -8,13 +8,13 @@ import {connectSocket} from "./utils/ws";
 
 // import './assets/main.css'
 
-// import ElementUI from 'element-plus'
-// import 'element-plus/dist/index.css'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 
 const app = createApp(App)
 
-// app.use(ElementUI)
+app.use(ElementPlus)
 const store = createPinia()
 store.use(piniaPluginPersist)
 app.use(store)

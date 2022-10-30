@@ -7,7 +7,7 @@
       <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
         <div class="login100-form validate-form">
 					<span class="login100-form-title p-b-49">
-						Login
+						ImTalk
 					</span>
 
           <div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
@@ -31,8 +31,8 @@
           <div class="container-login100-form-btn">
             <div class="wrap-login100-form-btn">
               <div class="login100-form-bgbtn"></div>
-              <button class="login100-form-btn" @click="submit">
-                登录
+              <button class="login100-form-btn" @click="submit" v-loading.fullscreen.lock="fullscreenLoading">
+                Login
               </button>
             </div>
           </div>
@@ -66,13 +66,15 @@
 <script>
 import {sendRequest} from "../utils/api";
 import {userStore} from "../stores/counter";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Login",
   data() {
     return {
+      fullscreenLoading: false,
       user : {
-        name: "admin",
+        name: "John",
       }
 
     }
@@ -82,19 +84,26 @@ export default {
   },
   methods: {
     submit() {
+      this.fullscreenLoading = true
       var that = this;
       console.log("vue submit");
 
+
       sendRequest("/user/auth", this.user).then((res) => {
+
         if (res.code === 0) {
           let store = userStore();
           store.changeUid(res.data.uid);
           store.changeToken(res.data.token)
 
           setTimeout(function () {
+            that.fullscreenLoading = false
             that.$router.push({path:'/'})
           }, 1000)
+        }else {
+          that.fullscreenLoading = false
         }
+
       })
 
 

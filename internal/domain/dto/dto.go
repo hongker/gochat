@@ -51,6 +51,7 @@ type SessionListResponse struct {
 type Session struct {
 	ID    string  `json:"id"`
 	Title string  `json:"title"`
+	Type  string  `json:"type"`
 	Last  Message `json:"last"`
 }
 

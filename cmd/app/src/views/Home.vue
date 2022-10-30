@@ -439,16 +439,21 @@
                     <a href="#" @click="queryHistory(item.id, item.title)">
                       <div class="media">
 
-                        <div class="chat-user-img online align-self-center mr-3">
+                        <div class="chat-user-img online align-self-center mr-3" v-if="item.type==='user'">
                           <img src="/static/picture/avatar-2.jpg" class="rounded-circle avatar-xs" alt="">
                           <span class="user-status"></span>
+                        </div>
+                        <div class="avatar-xs online align-self-center mr-3" v-else>
+                          <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                            #{{item.title[0].toUpperCase()}}
+                          </span>
                         </div>
 
                         <div class="media-body overflow-hidden">
                           <h5 class="text-truncate font-size-15 mb-1">{{item.title}}</h5>
                           <p class="chat-user-message text-truncate mb-0">{{item.last.content}}</p>
                         </div>
-                        <div class="font-size-11">05 min</div>
+                        <div class="font-size-11">{{formatTimer(item.last.created_at)}}</div>
                       </div>
                     </a>
                   </li>
@@ -681,7 +686,7 @@
               <div class="user-chat-nav float-right">
                 <div data-toggle="tooltip" data-placement="bottom" title="Create group">
                   <!-- Button trigger modal -->
-                  <button @click="createGroupModalDisplay=true" type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal" data-target="#addgroup-exampleModal">
+                  <button @click="showCreateGroupModal" type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal" data-target="#addgroup-exampleModal">
                     <i class="ri-group-line mr-1"></i>
                   </button>
                 </div>
@@ -890,43 +895,31 @@
               <div class="user-chat-nav float-right">
                 <div data-toggle="tooltip" data-placement="bottom" title="Add Contact">
                   <!-- Button trigger modal -->
-                  <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal" data-target="#addContact-exampleModal">
+                  <button @click="inviteContactDialogShow=true" type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0">
                     <i class="ri-user-add-line"></i>
                   </button>
                 </div>
               </div>
               <h4 class="mb-4">Contacts</h4>
-
-              <!-- Start Add contact Modal -->
-              <div class="modal fade" id="addContact-exampleModal" tabindex="-1" role="dialog" aria-labelledby="addContact-exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title font-size-16" id="addContact-exampleModalLabel">Add Contact</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body p-4">
-                      <form>
-                        <div class="form-group mb-4">
-                          <label for="addcontactemail-input">Email</label>
-                          <input v-model="inviteContactRequest.email" type="email" class="form-control" id="addcontactemail-input" placeholder="Enter Email">
-                        </div>
-                        <div class="form-group">
-                          <label for="addcontact-invitemessage-input">Invatation Message</label>
-                          <textarea v-model="inviteContactRequest.content" class="form-control" id="addcontact-invitemessage-input" rows="3" placeholder="Enter Message"></textarea>
-                        </div>
-                      </form>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary" @click="inviteContact" :disabled="inviteContactDisabled">Invite Contact</button>
-                    </div>
+              <el-dialog v-model="inviteContactDialogShow" title="Add Contact">
+                <form>
+                  <div class="form-group mb-4">
+                    <label for="addcontactemail-input">Email</label>
+                    <input v-model="inviteContactRequest.email" type="email" class="form-control" placeholder="Enter Email">
                   </div>
+                  <div class="form-group">
+                    <label for="addcontact-invitemessage-input">Invatation Message</label>
+                    <textarea v-model="inviteContactRequest.content" class="form-control"  rows="3" placeholder="Enter Message"></textarea>
+                  </div>
+                </form>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-link" @click="inviteContactDialogShow=false">Close</button>
+                  <button type="button" class="btn btn-primary" @click="inviteContact" :disabled="inviteContactDisabled">Invite Contact</button>
                 </div>
-              </div>
-              <!-- End Add contact Modal -->
+
+              </el-dialog>
+
+
 
               <div class="search-box chat-search-box">
                 <div class="input-group bg-light  input-group-lg rounded-lg">
@@ -1930,6 +1923,8 @@
 <script>
 
 import {userStore} from "../stores/counter";
+import { ElMessage } from 'element-plus'
+
 
 export default {
   name: "Home",
@@ -1959,6 +1954,7 @@ export default {
       updateProfileButtonDisabled: false,
 
       inviteContactDisabled: false,
+      inviteContactDialogShow: false,
       inviteContactRequest: {
         email:'',
         content:'',
@@ -2045,7 +2041,7 @@ export default {
           this.updateProfileInputShow = false
           break
         case this.operation.sendMessage:
-          this.inviteContactDisabled = false
+          // this.inviteContactDisabled = false
           break
         case this.operation.newMessage:
           let msg = JSON.parse(msgBody)
@@ -2061,10 +2057,11 @@ export default {
             this.messages.items.push(msg)
           }
           if (!exist) {
-            this.session.items.push({id: msg.session_id, title: msg.session_title, last: msg})
+            this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
           }
 
           break
+
         case this.operation.queryContacts:
           this.contacts = JSON.parse(msgBody)
           break
@@ -2092,6 +2089,12 @@ export default {
 
 
   methods : {
+    showInviteContactModal() {
+
+    },
+    showCreateGroupModal() {
+      this.queryContacts()
+    },
     isToday(date) {
       let today = new Date()
       today.setHours(0)
@@ -2123,6 +2126,10 @@ export default {
       return y + "-" + MM + "-" + d + " " + h + ":" + m;
     },
     sendMessage() {
+      if (this.sendMessageRequest.content === "") {
+        ElMessage.success("empty content")
+        return
+      }
       if (this.sendMessageRequest.type === 'group') {
         this.sendSocketMessage(this.operation.broadcastGroup, {
           target: this.currentSessionId,
@@ -2140,6 +2147,10 @@ export default {
 
     },
     createGroup() {
+      if (this.createGroupRequest.name === "") {
+        ElMessage.success("empty group name")
+        return
+      }
       this.createGroupDisabled = true
       this.sendSocketMessage(this.operation.createGroup, this.createGroupRequest)
       this.createGroupRequest.members = []
@@ -2149,7 +2160,7 @@ export default {
     queryHistory(sessionId, title) {
       this.currentSessionId = sessionId
       this.currentSessionTitle = title
-      this.sendMessageRequest.type = isNaN(sessionId) ? 'group': 'private'
+      this.sendMessageRequest.type = (sessionId) ? 'group': 'user'
       // this.talkIndex = index
       // let sessionId = this.session.items[index].id
       this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})
@@ -2164,12 +2175,18 @@ export default {
       this.sendSocketMessage(this.operation.queryContacts, {})
     },
     inviteContact() {
+      let that = this
       this.inviteContactDisabled = true
       this.sendSocketMessage(this.operation.sendMessage, {
         target: this.inviteContactRequest.email,
         content: this.inviteContactRequest.content,
         content_type: 'text',
       })
+      setTimeout(function () {
+        that.inviteContactRequest = false
+        that.inviteContactDialogShow = false
+      }, 500)
+
     },
     showUpdateProfileInput() {
 
