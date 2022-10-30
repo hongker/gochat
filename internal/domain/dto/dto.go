@@ -49,8 +49,9 @@ type SessionListResponse struct {
 	Items []Session `json:"items"`
 }
 type Session struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID    string  `json:"id"`
+	Title string  `json:"title"`
+	Last  Message `json:"last"`
 }
 
 type MessageSendRequest struct {

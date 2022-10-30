@@ -28,7 +28,7 @@
             </a>
           </li>
           <li class="nav-item" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="Chats">
-            <a class="nav-link active" id="pills-chat-tab" data-toggle="pill" href="#pills-chat" role="tab">
+            <a @click="listSession" class="nav-link active" id="pills-chat-tab" data-toggle="pill" href="#pills-chat" role="tab">
               <i class="ri-message-3-line"></i>
             </a>
           </li>
@@ -435,7 +435,7 @@
               <div class="chat-message-list" data-simplebar="">
 
                 <ul class="list-unstyled chat-list chat-user-list">
-                  <li>
+                  <li v-for="(item, key) in session.items" :key="key">
                     <a href="#">
                       <div class="media">
 
@@ -445,222 +445,222 @@
                         </div>
 
                         <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Patrick Hendricks</h5>
-                          <p class="chat-user-message text-truncate mb-0">Hey! there I'm available</p>
+                          <h5 class="text-truncate font-size-15 mb-1">{{item.title}}</h5>
+                          <p class="chat-user-message text-truncate mb-0">{{item.last.content}}</p>
                         </div>
                         <div class="font-size-11">05 min</div>
                       </div>
                     </a>
                   </li>
 
-                  <li class="unread">
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Mark Messer</h5>
-                          <p class="chat-user-message text-truncate mb-0"><i class="ri-image-fill align-middle mr-1"></i> Images</p>
-                        </div>
-                        <div class="font-size-11">12 min</div>
+<!--                  <li class="unread">-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img away align-self-center mr-3">-->
+<!--                          <img src="/static/picture/avatar-3.jpg" class="rounded-circle avatar-xs" alt="">-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Mark Messer</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0"><i class="ri-image-fill align-middle mr-1"></i> Images</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">12 min</div>-->
 
-                        <div class="unread-message">
-                          <span class="badge badge-soft-danger badge-pill">02</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
+<!--                        <div class="unread-message">-->
+<!--                          <span class="badge badge-soft-danger badge-pill">02</span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
 
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                G
-                                                            </span>
-                          </div>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">General</h5>
-                          <p class="chat-user-message text-truncate mb-0">This theme is awesome!</p>
-                        </div>
-                        <div class="font-size-11">20 min</div>
-                      </div>
-                    </a>
-                  </li>
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                G-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">General</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">This theme is awesome!</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">20 min</div>-->
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
 
-                  <li class="active">
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img online align-self-center mr-3">
-                          <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Doris Brown</h5>
-                          <p class="chat-user-message text-truncate mb-0">Nice to meet you</p>
-                        </div>
-                        <div class="font-size-11">10:12 AM</div>
+<!--                  <li class="active">-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img online align-self-center mr-3">-->
+<!--                          <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Doris Brown</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Nice to meet you</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">10:12 AM</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li class="unread">
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                D
-                                                            </span>
-                          </div>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Designer</h5>
-                          <p class="chat-user-message text-truncate mb-0">Next meeting tomorrow 10.00AM</p>
-                        </div>
-                        <div class="font-size-11">12:01 PM</div>
-                        <div class="unread-message">
-                          <span class="badge badge-soft-danger badge-pill">01</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Steve Walker</h5>
-                          <p class="chat-user-message text-truncate mb-0"><i class="ri-file-text-fill align-middle mr-1"></i> Admin-A.zip</p>
-                        </div>
-                        <div class="font-size-11">03:20 PM</div>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li class="unread">-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                D-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Designer</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Next meeting tomorrow 10.00AM</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">12:01 PM</div>-->
+<!--                        <div class="unread-message">-->
+<!--                          <span class="badge badge-soft-danger badge-pill">01</span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img away align-self-center mr-3">-->
+<!--                          <img src="/static/picture/avatar-6.jpg" class="rounded-circle avatar-xs" alt="">-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Steve Walker</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0"><i class="ri-file-text-fill align-middle mr-1"></i> Admin-A.zip</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">03:20 PM</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li class="typing">
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center online mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                A
-                                                            </span>
-                          </div>
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Albert Rodarte</h5>
-                          <p class="chat-user-message text-truncate mb-0">typing<span class="animate-typing">
-                                                            <span class="dot"></span>
-                                                            <span class="dot"></span>
-                                                            <span class="dot"></span>
-                                                        </span></p>
-                        </div>
-                        <div class="font-size-11">04:56 PM</div>
-                      </div>
-                    </a>
-                  </li>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li class="typing">-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center online mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                A-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Albert Rodarte</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">typing<span class="animate-typing">-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                            <span class="dot"></span>-->
+<!--                                                        </span></p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">04:56 PM</div>-->
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
 
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center online mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                M
-                                                            </span>
-                          </div>
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Mirta George</h5>
-                          <p class="chat-user-message text-truncate mb-0">Yeah everything is fine</p>
-                        </div>
-                        <div class="font-size-11">12/07</div>
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center online mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                M-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Mirta George</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Yeah everything is fine</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">12/07</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Paul Haynes</h5>
-                          <p class="chat-user-message text-truncate mb-0">Good morning</p>
-                        </div>
-                        <div class="font-size-11">12/07</div>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img away align-self-center mr-3">-->
+<!--                          <img src="/static/picture/avatar-7.jpg" class="rounded-circle avatar-xs" alt="">-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Paul Haynes</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Good morning</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">12/07</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center online mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                J
-                                                            </span>
-                          </div>
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Jonathan Miller</h5>
-                          <p class="chat-user-message text-truncate mb-0">Hi, How are you?</p>
-                        </div>
-                        <div class="font-size-11">12/07</div>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center online mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                J-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Jonathan Miller</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Hi, How are you?</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">12/07</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img away align-self-center mr-3">
-                          <img src="/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Ossie Wilson</h5>
-                          <p class="chat-user-message text-truncate mb-0">I've finished it! See you so</p>
-                        </div>
-                        <div class="font-size-11">11/07</div>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img away align-self-center mr-3">-->
+<!--                          <img src="/static/picture/avatar-8.jpg" class="rounded-circle avatar-xs" alt="">-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Ossie Wilson</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">I've finished it! See you so</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">11/07</div>-->
 
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <div class="media">
-                        <div class="chat-user-img align-self-center online mr-3">
-                          <div class="avatar-xs">
-                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                S
-                                                            </span>
-                          </div>
-                          <span class="user-status"></span>
-                        </div>
-                        <div class="media-body overflow-hidden">
-                          <h5 class="text-truncate font-size-15 mb-1">Sara Muller</h5>
-                          <p class="chat-user-message text-truncate mb-0">Wow that's great</p>
-                        </div>
-                        <div class="font-size-11">11/07</div>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
+<!--                  <li>-->
+<!--                    <a href="#">-->
+<!--                      <div class="media">-->
+<!--                        <div class="chat-user-img align-self-center online mr-3">-->
+<!--                          <div class="avatar-xs">-->
+<!--                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                                S-->
+<!--                                                            </span>-->
+<!--                          </div>-->
+<!--                          <span class="user-status"></span>-->
+<!--                        </div>-->
+<!--                        <div class="media-body overflow-hidden">-->
+<!--                          <h5 class="text-truncate font-size-15 mb-1">Sara Muller</h5>-->
+<!--                          <p class="chat-user-message text-truncate mb-0">Wow that's great</p>-->
+<!--                        </div>-->
+<!--                        <div class="font-size-11">11/07</div>-->
 
-                      </div>
-                    </a>
-                  </li>
+<!--                      </div>-->
+<!--                    </a>-->
+<!--                  </li>-->
 
 
                 </ul>
@@ -2119,8 +2119,11 @@ export default {
         content:'',
       },
       contacts: {
-        items: []
+        items: [],
       },
+      session: {
+        items: [],
+      }
     }
   },
   mounted() {
@@ -2165,6 +2168,9 @@ export default {
         case this.operation.queryContacts:
           this.contacts = JSON.parse(msgBody)
           break
+        case this.operation.listSession:
+          this.session = JSON.parse(msgBody)
+          break
         default:
           console.log("unknown operation")
       }
@@ -2172,7 +2178,13 @@ export default {
     }
 
   },
+ unmounted() {
+    this.ws.close()
+ },
   methods : {
+    listSession() {
+      this.sendSocketMessage(this.operation.listSession, {})
+    },
     queryContacts() {
       this.sendSocketMessage(this.operation.queryContacts, {})
     },
@@ -2211,6 +2223,7 @@ export default {
       var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
 
       this.ws.send(buf)
+      console.log('send socket message successfully:', operate)
     }
 
   }

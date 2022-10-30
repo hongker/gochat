@@ -18,7 +18,19 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 
 	resp = &dto.SessionListResponse{Items: make([]dto.Session, 0, len(sessions))}
 	for _, session := range sessions {
-		resp.Items = append(resp.Items, dto.Session{ID: session.ID, Title: session.Title})
+		item := dto.Session{
+			ID:    session.ID,
+			Title: session.Title,
+		}
+		if session.Last != nil {
+			item.Last = dto.Message{
+				ID:          session.Last.ID,
+				Content:     session.Last.Content,
+				ContentType: session.Last.ContentType,
+				CreatedAt:   session.Last.CreatedAt,
+			}
+		}
+		resp.Items = append(resp.Items, item)
 	}
 	return
 }
@@ -39,9 +51,18 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendReque
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 	err = handler.messageApp.Send(ctx, msg, codec.Default(), packet)
 	if err == nil {
+		var sender, receiver *application.User
+		sender, err = handler.userApp.Get(ctx, uid)
+		if err != nil {
+			return
+		}
+		receiver, err = handler.userApp.Get(ctx, req.Target)
+		if err != nil {
+			return
+		}
 		// save user session
-		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: "", Last: msg})
-		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: "", Last: msg})
+		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: receiver.Name, Last: msg})
+		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: sender.Name, Last: msg})
 
 		handler.userApp.SaveContact(ctx, uid, req.Target)
 		handler.userApp.SaveContact(ctx, req.Target, uid)

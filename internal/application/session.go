@@ -2,12 +2,11 @@ package application
 
 import (
 	"context"
-	"sync"
+	"gochat/pkg/cmap"
 )
 
 type SessionApplication struct {
-	rmu      sync.RWMutex
-	sessions map[string][]*Session
+	collection *cmap.Container[string, []*Session]
 }
 
 type Session struct {
@@ -17,35 +16,33 @@ type Session struct {
 }
 
 func (app *SessionApplication) GetSessionList(ctx context.Context, uid string) ([]*Session, error) {
-	app.rmu.RLock()
-	items := app.sessions[uid]
-	app.rmu.RUnlock()
+	items, _ := app.collection.Get(uid)
 	return items, nil
 }
 
 func (app *SessionApplication) SaveSession(ctx context.Context, uid string, session *Session) (err error) {
-	app.rmu.Lock()
-	defer app.rmu.Unlock()
-	items := app.sessions[uid]
-	if len(items) == 0 {
-		app.sessions[uid] = []*Session{session}
-		return
-	}
+	items, _ := app.collection.Get(uid)
 
+	var exist bool
 	for _, item := range items {
 		if item.ID == session.ID {
 			item.Title = session.Title
 			item.Last = session.Last
+			exist = true
 			break
 		}
 	}
-	app.sessions[uid] = items
+
+	if !exist {
+		items = append(items, session)
+	}
+	app.collection.Set(uid, items)
 
 	return
 }
 
 func NewSessionApplication() *SessionApplication {
 	return &SessionApplication{
-		sessions: map[string][]*Session{},
+		collection: cmap.NewContainer[string, []*Session](),
 	}
 }
