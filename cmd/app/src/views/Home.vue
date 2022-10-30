@@ -1806,7 +1806,7 @@
             <div class="row no-gutters">
               <div class="col">
                 <div>
-                  <input type="text" class="form-control form-control-lg bg-light border-light" placeholder="Enter Message...">
+                  <input v-model="sendMessageRequest.content"  type="text" class="form-control form-control-lg bg-light border-light" placeholder="Enter Message...">
                 </div>
               </div>
               <div class="col-auto">
@@ -1823,7 +1823,7 @@
                       </button>
                     </li>
                     <li class="list-inline-item">
-                      <button type="submit" class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light">
+                      <button @click="sendMessage" type="submit" class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light">
                         <i class="ri-send-plane-2-fill"></i>
                       </button>
                     </li>
@@ -2127,7 +2127,11 @@ export default {
       talkIndex: 0,
       messages: {
         items: [],
-      }
+      },
+      sendMessageRequest: {
+        content: '',
+        content_type: 'text',
+      },
     }
   },
   mounted() {
@@ -2189,6 +2193,13 @@ export default {
     this.ws.close()
  },
   methods : {
+    sendMessage() {
+      this.sendSocketMessage(this.operation.sendMessage, {
+        target: this.session.items[this.talkIndex].id,
+        content: this.sendMessageRequest.content,
+        content_type: this.sendMessageRequest.content_type,
+      })
+    },
     queryHistory(index) {
       this.talkIndex = index
       let sessionId = this.session.items[index].id
