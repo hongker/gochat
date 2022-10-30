@@ -435,8 +435,8 @@
               <div class="chat-message-list" data-simplebar="">
 
                 <ul class="list-unstyled chat-list chat-user-list">
-                  <li v-for="(item, key) in session.items" :key="key" :class="{'active': talkIndex === key}">
-                    <a href="#" @click="queryHistory(key)">
+                  <li v-for="(item, key) in session.items" :key="key" :class="{'active': currentSessionId === item.id}">
+                    <a href="#" @click="queryHistory(item.id, item.title)">
                       <div class="media">
 
                         <div class="chat-user-img online align-self-center mr-3">
@@ -930,7 +930,7 @@
 
               <ul class="list-unstyled chat-list">
                 <li v-for="(item, key) in channels.items" :key="key">
-                  <a href="#">
+                  <a @click="queryHistory(item.id, item.name)" href="#">
                     <div class="media align-items-center">
                       <div class="chat-user-img mr-3">
                         <div class="avatar-xs">
@@ -1408,7 +1408,7 @@
                     <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
                   </div>
                   <div class="media-body overflow-hidden">
-                    <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">{{session.items.length > 0 ? session.items[talkIndex].title : '' }}</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
+                    <h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">{{currentSessionTitle }}</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>
                   </div>
                 </div>
               </div>
@@ -2125,11 +2125,13 @@ export default {
       session: {
         items: [],
       },
-      talkIndex: 0,
+      currentSessionId: '',
+      currentSessionTitle: '',
       messages: {
         items: [],
       },
       sendMessageRequest: {
+        type:'',
         content: '',
         content_type: 'text',
       },
@@ -2153,6 +2155,9 @@ export default {
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
       this.sendSocketMessage(that.operation.heartbeat, {})
 
+    }
+    this.ws.onclose = ({data}) => {
+      console.log('websocket disconnected', data)
     }
     this.ws.onmessage = ({ data }) => {
       var dataView = new DataView(data, 0);
@@ -2192,11 +2197,12 @@ export default {
           for (let i = 0; i < this.session.items.length; i++) {
             if (this.session.items[i].id === msg.session_id) {
               this.session.items[i].last = msg
-              if (this.talkIndex === i) {
-                this.messages.items.push(msg)
-              }
+
               break
             }
+          }
+          if (this.currentSessionId === msg.session_id) {
+            this.messages.items.push(msg)
           }
 
           break
@@ -2260,19 +2266,31 @@ export default {
       return y + "-" + MM + "-" + d + " " + h + ":" + m;
     },
     sendMessage() {
-      this.sendSocketMessage(this.operation.sendMessage, {
-        target: this.session.items[this.talkIndex].id,
-        content: this.sendMessageRequest.content,
-        content_type: this.sendMessageRequest.content_type,
-      })
+      if (this.sendMessageRequest.type === 'group') {
+        this.sendSocketMessage(this.operation.broadcastGroup, {
+          target: this.currentSessionId,
+          content: this.sendMessageRequest.content,
+          content_type: this.sendMessageRequest.content_type,
+        })
+      }else {
+        this.sendSocketMessage(this.operation.sendMessage, {
+          target: this.currentSessionId,
+          content: this.sendMessageRequest.content,
+          content_type: this.sendMessageRequest.content_type,
+        })
+      }
+
     },
     createGroup() {
       this.createGroupDisabled = true
       this.sendSocketMessage(this.operation.createGroup, this.createGroupRequest)
     },
-    queryHistory(index) {
-      this.talkIndex = index
-      let sessionId = this.session.items[index].id
+    queryHistory(sessionId, title) {
+      this.currentSessionId = sessionId
+      this.currentSessionTitle = title
+      this.sendMessageRequest.type = isNaN(sessionId) ? 'group': 'private'
+      // this.talkIndex = index
+      // let sessionId = this.session.items[index].id
       this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})
     },
     listChannel() {

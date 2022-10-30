@@ -52,12 +52,10 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroa
 		Target:      req.Target,
 		Sender:      uid,
 	}
-	err = handler.channelApp.Broadcast(ctx, msg, codec.Default(), packet)
-
-	if err != nil {
-		return
-	}
 
 	handler.messageApp.Save(req.Target, msg)
+
+	err = handler.channelApp.Broadcast(ctx, msg, codec.Default(), packet)
+
 	return
 }
