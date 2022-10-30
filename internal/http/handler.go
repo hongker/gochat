@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/application"
+	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
 	"os"
 	"strings"
@@ -16,13 +17,14 @@ type Handler struct {
 	userApp *application.UserApplication
 }
 
-func NewHandler() *Handler {
+func NewHandler(bucket *bucket.Bucket) *Handler {
 	return &Handler{
 		userApp: application.NewUserApplication(),
 	}
 }
 func (handler *Handler) Install(router *gin.Engine) {
 	router.POST("/user/auth", convertAction[dto.LoginRequest, dto.LoginResponse](handler.login))
+
 	router.Use(static.Serve("/", static.LocalFile("app/dist", true)))
 	router.NoRoute(func(ctx *gin.Context) {
 		accept := ctx.Request.Header.Get("Accept")

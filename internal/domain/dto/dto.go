@@ -104,3 +104,14 @@ type ContactQueryRequest struct{}
 type ContactQueryResponse struct {
 	Items []User `json:"items"`
 }
+
+type ChannelQueryRequest struct{}
+type ChannelQueryResponse struct {
+	Items []Channel `json:"items"`
+}
+
+type Channel struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Owner string `json:"owner"`
+}

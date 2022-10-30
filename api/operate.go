@@ -7,14 +7,13 @@ const (
 	OperateFindUserProfile
 	OperateListSession
 	OperateSendMessage
-
 	OperateCreateChannel
 	OperateJoinChannel
 	OperateLeaveChannel
 	OperateBroadcastChannel
 	OperateQueryMessage
-
 	OperateQueryContact
+	OperateQueryChannel
 )
 
 const (

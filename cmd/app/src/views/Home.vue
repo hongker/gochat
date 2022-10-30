@@ -33,7 +33,7 @@
             </a>
           </li>
           <li class="nav-item" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="Groups">
-            <a class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups" role="tab">
+            <a @click="listChannel" class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups" role="tab">
               <i class="ri-group-line"></i>
             </a>
           </li>
@@ -703,7 +703,7 @@
                       <form>
                         <div class="form-group mb-4">
                           <label for="addgroupname-input">Group Name</label>
-                          <input type="text" class="form-control" id="addgroupname-input" placeholder="Enter Group Name">
+                          <input v-model="createGroupRequest.name" type="text" class="form-control" id="addgroupname-input" placeholder="Enter Group Name">
                         </div>
                         <div class="form-group mb-4">
                           <label>Group Members</label>
@@ -898,13 +898,13 @@
                         </div>
                         <div class="form-group">
                           <label for="addgroupdescription-input">Description</label>
-                          <textarea class="form-control" id="addgroupdescription-input" rows="3" placeholder="Enter Description"></textarea>
+                          <textarea v-model="createGroupRequest.description" class="form-control" id="addgroupdescription-input" rows="3" placeholder="Enter Description"></textarea>
                         </div>
                       </form>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Create Groups</button>
+                      <button @click="createGroup" :disabled="createGroupDisabled" type="button" class="btn btn-primary">Create Groups</button>
                     </div>
                   </div>
                 </div>
@@ -929,107 +929,107 @@
 
 
               <ul class="list-unstyled chat-list">
-                <li>
+                <li v-for="(item, key) in channels.items" :key="key">
                   <a href="#">
                     <div class="media align-items-center">
                       <div class="chat-user-img mr-3">
                         <div class="avatar-xs">
                                                         <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            G
+                                                            {{item.name[0].toUpperCase()}}
                                                         </span>
                         </div>
                       </div>
                       <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#General</h5>
+                        <h5 class="text-truncate font-size-14 mb-0">#{{item.name}}</h5>
                       </div>
                     </div>
                   </a>
                 </li>
 
-                <li>
-                  <a href="#">
-                    <div class="media align-items-center">
-                      <div class="chat-user-img mr-3">
-                        <div class="avatar-xs">
-                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            R
-                                                        </span>
-                        </div>
-                      </div>
-                      <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#Reporting <span class="badge badge-soft-danger badge-pill float-right">+23</span></h5>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+<!--                <li>-->
+<!--                  <a href="#">-->
+<!--                    <div class="media align-items-center">-->
+<!--                      <div class="chat-user-img mr-3">-->
+<!--                        <div class="avatar-xs">-->
+<!--                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                            R-->
+<!--                                                        </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="media-body overflow-hidden">-->
+<!--                        <h5 class="text-truncate font-size-14 mb-0">#Reporting <span class="badge badge-soft-danger badge-pill float-right">+23</span></h5>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </a>-->
+<!--                </li>-->
 
-                <li>
-                  <a href="#">
-                    <div class="media align-items-center">
-                      <div class="chat-user-img mr-3">
-                        <div class="avatar-xs">
-                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            D
-                                                        </span>
-                        </div>
-                      </div>
-                      <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#Designers</h5>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+<!--                <li>-->
+<!--                  <a href="#">-->
+<!--                    <div class="media align-items-center">-->
+<!--                      <div class="chat-user-img mr-3">-->
+<!--                        <div class="avatar-xs">-->
+<!--                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                            D-->
+<!--                                                        </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="media-body overflow-hidden">-->
+<!--                        <h5 class="text-truncate font-size-14 mb-0">#Designers</h5>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </a>-->
+<!--                </li>-->
 
-                <li>
-                  <a href="#">
-                    <div class="media align-items-center">
-                      <div class="chat-user-img mr-3">
-                        <div class="avatar-xs">
-                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            D
-                                                        </span>
-                        </div>
-                      </div>
-                      <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#Developers <span class="badge badge-soft-danger badge-pill float-right">New</span></h5>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+<!--                <li>-->
+<!--                  <a href="#">-->
+<!--                    <div class="media align-items-center">-->
+<!--                      <div class="chat-user-img mr-3">-->
+<!--                        <div class="avatar-xs">-->
+<!--                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                            D-->
+<!--                                                        </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="media-body overflow-hidden">-->
+<!--                        <h5 class="text-truncate font-size-14 mb-0">#Developers <span class="badge badge-soft-danger badge-pill float-right">New</span></h5>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </a>-->
+<!--                </li>-->
 
-                <li>
-                  <a href="#">
-                    <div class="media align-items-center">
-                      <div class="chat-user-img mr-3">
-                        <div class="avatar-xs">
-                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            P
-                                                        </span>
-                        </div>
-                      </div>
-                      <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#Project-alpha</h5>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+<!--                <li>-->
+<!--                  <a href="#">-->
+<!--                    <div class="media align-items-center">-->
+<!--                      <div class="chat-user-img mr-3">-->
+<!--                        <div class="avatar-xs">-->
+<!--                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                            P-->
+<!--                                                        </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="media-body overflow-hidden">-->
+<!--                        <h5 class="text-truncate font-size-14 mb-0">#Project-alpha</h5>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </a>-->
+<!--                </li>-->
 
-                <li>
-                  <a href="#">
-                    <div class="media align-items-center">
-                      <div class="chat-user-img mr-3">
-                        <div class="avatar-xs">
-                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                            B
-                                                        </span>
-                        </div>
-                      </div>
-                      <div class="media-body overflow-hidden">
-                        <h5 class="text-truncate font-size-14 mb-0">#Snacks</h5>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+<!--                <li>-->
+<!--                  <a href="#">-->
+<!--                    <div class="media align-items-center">-->
+<!--                      <div class="chat-user-img mr-3">-->
+<!--                        <div class="avatar-xs">-->
+<!--                                                        <span class="avatar-title rounded-circle bg-soft-primary text-primary">-->
+<!--                                                            B-->
+<!--                                                        </span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="media-body overflow-hidden">-->
+<!--                        <h5 class="text-truncate font-size-14 mb-0">#Snacks</h5>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </a>-->
+<!--                </li>-->
               </ul>
             </div>
             <!-- End chat-group-list -->
@@ -2133,6 +2133,15 @@ export default {
         content: '',
         content_type: 'text',
       },
+      createGroupRequest: {
+        name: '',
+        description: '',
+      },
+      createGroupDisabled: false,
+
+      channels: {
+        items: [],
+      }
     }
   },
   mounted() {
@@ -2142,9 +2151,7 @@ export default {
       let user = userStore()
       that.user.uid = user.uid
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
-      setInterval(function () {
-        that.sendSocketMessage(that.operation.heartbeat, {})
-      }, 5000)
+      this.sendSocketMessage(that.operation.heartbeat, {})
 
     }
     this.ws.onmessage = ({ data }) => {
@@ -2158,6 +2165,11 @@ export default {
       console.log("header: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
 
       switch (op) {
+        case this.operation.heartbeat:
+          setTimeout(function () {
+            that.sendSocketMessage(that.operation.heartbeat, {})
+          }, 10000)
+          break
         case this.operation.connect:
           this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
           break
@@ -2196,6 +2208,14 @@ export default {
           break
         case this.operation.queryHistory:
           this.messages = JSON.parse(msgBody)
+          break
+        case this.operation.queryChannel:
+          this.channels = JSON.parse(msgBody)
+          break
+        case this.operation.createGroup:
+          this.createGroupDisabled = false
+          break
+        case this.operation.joinGroup:
           break
         default:
           console.log("unknown operation")
@@ -2246,10 +2266,17 @@ export default {
         content_type: this.sendMessageRequest.content_type,
       })
     },
+    createGroup() {
+      this.createGroupDisabled = true
+      this.sendSocketMessage(this.operation.createGroup, this.createGroupRequest)
+    },
     queryHistory(index) {
       this.talkIndex = index
       let sessionId = this.session.items[index].id
       this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})
+    },
+    listChannel() {
+      this.sendSocketMessage(this.operation.queryChannel, {})
     },
     listSession() {
       this.sendSocketMessage(this.operation.listSession, {})

@@ -8,6 +8,18 @@ import (
 	"gochat/internal/domain/dto"
 )
 
+func (handler *Handler) listChannel(ctx *znet.Context, req *dto.ChannelQueryRequest) (resp *dto.ChannelQueryResponse, err error) {
+	items := handler.channelApp.List(ctx)
+	resp = &dto.ChannelQueryResponse{Items: make([]dto.Channel, len(items))}
+	for i, item := range items {
+		resp.Items[i] = dto.Channel{
+			ID:    item.ID,
+			Name:  item.Name,
+			Owner: item.Owner,
+		}
+	}
+	return
+}
 func (handler *Handler) createChannel(ctx *znet.Context, req *dto.ChannelCreateRequest) (resp *dto.ChannelCreateResponse, err error) {
 	uid := handler.currentUser(ctx)
 	channel, err := handler.channelApp.Create(ctx, uid, req.Name)

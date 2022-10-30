@@ -5,6 +5,7 @@ import (
 	"github.com/ebar-go/ego"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
+	"gochat/internal/bucket"
 	"gochat/internal/http"
 	"gochat/internal/socket"
 	"log"
@@ -14,6 +15,7 @@ type Server struct{}
 
 func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	log.Println("server started")
+	b := bucket.NewBucket()
 
 	httpContext, httpCancel := context.WithCancel(context.Background())
 	defer httpCancel()
@@ -24,11 +26,11 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 			EnableCorsMiddleware().
 			EnablePprofHandler().
 			EnableAvailableHealthCheck().
-			RegisterRouteLoader(http.NewHandler().Install).
+			RegisterRouteLoader(http.NewHandler(b).Install).
 			Serve(httpContext.Done())
 	}()
 
-	handler := socket.NewHandler()
+	handler := socket.NewHandler(b)
 	instance := znet.New(func(options *znet.Options) {
 		options.OnConnect = handler.OnConnect
 		options.OnDisconnect = handler.OnDisconnect

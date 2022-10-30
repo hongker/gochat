@@ -23,15 +23,14 @@ type Handler struct {
 	userApp           *application.UserApplication
 }
 
-func NewHandler() *Handler {
-	b := bucket.NewBucket()
+func NewHandler(bucket *bucket.Bucket) *Handler {
 	return &Handler{
-		bucket:            b,
+		bucket:            bucket,
 		timers:            map[string]*time.Timer{},
 		heartbeatInterval: time.Minute * 10,
 		sessionApp:        application.NewSessionApplication(),
-		messageApp:        application.NewMessageApplication(b),
-		channelApp:        application.NewChannelApplication(b),
+		messageApp:        application.NewMessageApplication(bucket),
+		channelApp:        application.NewChannelApplication(bucket),
 		userApp:           application.NewUserApplication(),
 	}
 }
@@ -47,6 +46,7 @@ func (handler *Handler) Install(router *znet.Router) {
 	router.Route(api.OperateListSession, znet.StandardHandler[dto.SessionListRequest, dto.SessionListResponse](handler.listSession))
 	router.Route(api.OperateSendMessage, znet.StandardHandler[dto.MessageSendRequest, dto.MessageSendResponse](handler.sendMessage))
 
+	router.Route(api.OperateQueryChannel, znet.StandardHandler[dto.ChannelQueryRequest, dto.ChannelQueryResponse](handler.listChannel))
 	router.Route(api.OperateJoinChannel, znet.StandardHandler[dto.ChannelJoinRequest, dto.ChannelJoinResponse](handler.joinChannel))
 	router.Route(api.OperateLeaveChannel, znet.StandardHandler[dto.ChannelLeaveRequest, dto.ChannelLeaveResponse](handler.leaveChannel))
 	router.Route(api.OperateCreateChannel, znet.StandardHandler[dto.ChannelCreateRequest, dto.ChannelCreateResponse](handler.createChannel))

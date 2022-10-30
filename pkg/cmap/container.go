@@ -29,6 +29,13 @@ func (c *Container[Key, Value]) Del(key Key) {
 	delete(c.items, key)
 	c.rmu.Unlock()
 }
+func (c *Container[Key, Value]) Iterator(iterator func(Key, Value)) {
+	c.rmu.RLock()
+	for key, item := range c.items {
+		iterator(key, item)
+	}
+	c.rmu.RUnlock()
+}
 
 // NewContainer creates a new Container instance
 func NewContainer[Key int | int16 | string, Value any]() *Container[Key, Value] {
