@@ -3,3 +3,4 @@ vendor/
 test/
 cmd/app/.vscode
 cmd/app/node_modules
+cmd/dist

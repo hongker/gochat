@@ -1229,7 +1229,7 @@
     <!-- end chat-leftsidebar -->
 
     <!-- Start User chat -->
-    <div class="user-chat w-100">
+    <div class="user-chat w-100 " :class="{ 'user-chat-show': showChat}">
       <div class="d-lg-flex">
 
         <!-- start chat conversation section -->
@@ -1239,7 +1239,7 @@
               <div class="col-sm-4 col-8">
                 <div class="media align-items-center">
                   <div class="d-block d-lg-none mr-2">
-                    <a href="javascript: void(0);" class="user-chat-remove text-muted font-size-16 p-2"><i class="ri-arrow-left-s-line"></i></a>
+                    <a @click="showChat=false" href="javascript: void(0);" class="user-chat-remove text-muted font-size-16 p-2"><i class="ri-arrow-left-s-line"></i></a>
                   </div>
                   <div class="mr-3">
                     <img src="/static/picture/avatar-4.jpg" class="rounded-circle avatar-xs" alt="">
@@ -1932,6 +1932,7 @@ export default {
   inject: ["socket", "operation"],
   data() {
     return {
+      showChat: false,
       ws: {},
       textEncoder : new TextEncoder(),
       textDecoder: new TextDecoder(),
@@ -1991,7 +1992,11 @@ export default {
     }
   },
   mounted() {
-    this.initWebsocket()
+    let that = this
+    setTimeout(function () {
+      that.initWebsocket()
+    }, 2000)
+
 
   },
 
@@ -2181,6 +2186,7 @@ export default {
       this.createGroupRequest.description = ''
     },
     queryHistory(sessionId, title) {
+      this.showChat = true
       this.currentSessionId = sessionId
       this.currentSessionTitle = title
       this.sendMessageRequest.type = isNaN(sessionId) ? 'group': 'user'
