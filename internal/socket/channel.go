@@ -27,6 +27,7 @@ func (handler *Handler) createChannel(ctx *znet.Context, req *dto.ChannelCreateR
 		return
 	}
 	resp = &dto.ChannelCreateResponse{ID: channel.ID}
+	handler.channelApp.Join(ctx, channel.ID, req.Members...)
 	return
 }
 

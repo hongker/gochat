@@ -62,7 +62,8 @@ type MessageSendRequest struct {
 type MessageSendResponse struct{}
 
 type ChannelCreateRequest struct {
-	Name string `json:"name"`
+	Name    string   `json:"name"`
+	Members []string `json:"members"`
 }
 type ChannelCreateResponse struct {
 	ID string

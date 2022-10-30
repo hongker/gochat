@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
@@ -38,13 +39,14 @@ func (app *ChannelApplication) Create(ctx context.Context, uid, name string) (ch
 	return
 }
 
-func (app *ChannelApplication) Join(ctx context.Context, id string, uid string) (err error) {
+func (app *ChannelApplication) Join(ctx context.Context, id string, memberIds ...string) (err error) {
 	channel := app.bucket.GetChannel(id)
 	if channel == nil {
-		return
+		return errors.NotFound("channel not found")
 	}
-
-	app.bucket.SubscribeChannel(channel, app.bucket.GetSession(uid))
+	for _, memberId := range memberIds {
+		app.bucket.SubscribeChannel(channel, app.bucket.GetSession(memberId))
+	}
 
 	return
 }

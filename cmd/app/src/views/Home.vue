@@ -2156,8 +2156,8 @@ export default {
       this.sendSocketMessage(that.operation.heartbeat, {})
 
     }
-    this.ws.onclose = ({data}) => {
-      console.log('websocket disconnected', data)
+    this.ws.onclose = (e) => {
+      console.log('websocket disconnected', e)
     }
     this.ws.onmessage = ({ data }) => {
       var dataView = new DataView(data, 0);
@@ -2279,6 +2279,7 @@ export default {
           content_type: this.sendMessageRequest.content_type,
         })
       }
+      this.sendMessageRequest.content = ''
 
     },
     createGroup() {
