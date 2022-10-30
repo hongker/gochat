@@ -6,6 +6,7 @@ import (
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
+	"gochat/internal/domain/dto"
 	"sync"
 	"time"
 )
@@ -33,30 +34,53 @@ func (app *MessageApplication) Query(ctx context.Context, sessionID string) (ite
 
 }
 
-func (app *MessageApplication) Send(ctx context.Context, msg *Message, codec codec.Codec, packet *codec.Packet) (err error) {
-	receiverSession := app.bucket.GetSession(msg.Target)
+func (app *MessageApplication) Send(ctx context.Context, sender *User, req *dto.MessageSendRequest, codec codec.Codec, packet *codec.Packet) (msg *Message, err error) {
+	receiverSession := app.bucket.GetSession(req.Target)
 	if receiverSession == nil {
 		err = errors.NotFound("receiver not found")
 		return
 	}
-	senderSession := app.bucket.GetSession(msg.Sender)
+	senderSession := app.bucket.GetSession(sender.ID)
 	if senderSession == nil {
 		err = errors.NotFound("sender not found")
 		return
 	}
 
-	msg.ID = uuid.NewV4().String()
-	msg.CreatedAt = time.Now().UnixMilli()
-
-	buf, err := codec.Pack(packet, msg)
-	if err != nil {
-		return
+	msg = &Message{
+		ID:          uuid.NewV4().String(),
+		Content:     req.Content,
+		ContentType: req.ContentType,
+		Target:      req.Target,
+		Sender:      sender.ID,
+		CreatedAt:   time.Now().UnixMilli(),
 	}
-	receiverSession.Send(buf)
-	senderSession.Send(buf)
 
 	app.Save(receiverSession.ID, msg)
 	app.Save(senderSession.ID, msg)
+
+	receiverBuf, err := codec.Pack(packet, dto.Message{
+		ID:          msg.ID,
+		SessionID:   msg.Sender,
+		Content:     msg.Content,
+		ContentType: msg.ContentType,
+		CreatedAt:   msg.CreatedAt,
+		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+	})
+	if err == nil {
+		receiverSession.Send(receiverBuf)
+	}
+
+	senderBuf, err := codec.Pack(packet, dto.Message{
+		ID:          msg.ID,
+		SessionID:   msg.Target,
+		Content:     msg.Content,
+		ContentType: msg.ContentType,
+		CreatedAt:   msg.CreatedAt,
+		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+	})
+	if err == nil {
+		senderSession.Send(senderBuf)
+	}
 
 	return
 }

@@ -2172,6 +2172,17 @@ export default {
           this.inviteContactDisabled = false
           break
         case this.operation.newMessage:
+          let msg = JSON.parse(msgBody)
+          for (let i = 0; i < this.session.items.length; i++) {
+            if (this.session.items[i].id === msg.session_id) {
+              this.session.items[i].last = msg
+              if (this.talkIndex === i) {
+                this.messages.items.push(msg)
+              }
+              break
+            }
+          }
+
           break
         case this.operation.queryContacts:
           this.contacts = JSON.parse(msgBody)

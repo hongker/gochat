@@ -93,6 +93,7 @@ type MessageQueryResponse struct {
 }
 type Message struct {
 	ID          string `json:"id"`
+	SessionID   string `json:"session_id"`
 	Content     string `json:"content"`
 	ContentType string `json:"content_type"`
 	CreatedAt   int64  `json:"created_at"`

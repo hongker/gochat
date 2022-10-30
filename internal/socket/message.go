@@ -38,28 +38,19 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 // sendMessage sends a message to receiver
 func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendRequest) (resp *dto.MessageSendResponse, err error) {
 	uid := handler.currentUser(ctx)
+	var sender, receiver *application.User
+	sender, err = handler.userApp.Get(ctx, uid)
 	if err != nil {
 		return
 	}
-	msg := &application.Message{
-		Content:     req.Content,
-		ContentType: req.ContentType,
-		Target:      req.Target,
-		Sender:      uid,
+	receiver, err = handler.userApp.Get(ctx, req.Target)
+	if err != nil {
+		return
 	}
 
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
-	err = handler.messageApp.Send(ctx, msg, codec.Default(), packet)
+	msg, err := handler.messageApp.Send(ctx, sender, req, codec.Default(), packet)
 	if err == nil {
-		var sender, receiver *application.User
-		sender, err = handler.userApp.Get(ctx, uid)
-		if err != nil {
-			return
-		}
-		receiver, err = handler.userApp.Get(ctx, req.Target)
-		if err != nil {
-			return
-		}
 		// save user session
 		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: receiver.Name, Last: msg})
 		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: sender.Name, Last: msg})
