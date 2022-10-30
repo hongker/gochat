@@ -3,9 +3,11 @@ package socket
 import (
 	"github.com/ebar-go/znet"
 	"github.com/ebar-go/znet/codec"
+	uuid "github.com/satori/go.uuid"
 	"gochat/api"
 	"gochat/internal/application"
 	"gochat/internal/domain/dto"
+	"time"
 )
 
 func (handler *Handler) listChannel(ctx *znet.Context, req *dto.ChannelQueryRequest) (resp *dto.ChannelQueryResponse, err error) {
@@ -46,17 +48,30 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroa
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
 
 	uid := handler.currentUser(ctx)
+	sender, err := handler.userApp.Get(ctx, uid)
+	if err != nil {
+		return
+	}
 
 	msg := &application.Message{
+		ID:          uuid.NewV4().String(),
 		Content:     req.Content,
 		ContentType: req.ContentType,
 		Target:      req.Target,
 		Sender:      uid,
+		CreatedAt:   time.Now().UnixMilli(),
 	}
 
 	handler.messageApp.Save(req.Target, msg)
 
-	err = handler.channelApp.Broadcast(ctx, msg, codec.Default(), packet)
+	err = handler.channelApp.Broadcast(ctx, dto.Message{
+		ID:          msg.ID,
+		SessionID:   msg.Target,
+		Content:     msg.Content,
+		ContentType: msg.ContentType,
+		CreatedAt:   msg.CreatedAt,
+		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+	}, codec.Default(), packet)
 
 	return
 }

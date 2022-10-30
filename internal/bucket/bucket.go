@@ -59,7 +59,7 @@ func (bucket *Bucket) GetOrCreate(id string) *Channel {
 func (bucket *Bucket) SubscribeChannel(channel *Channel, sessions ...*Session) {
 	for _, session := range sessions {
 		channel.AddSession(session)
-		session.Channels = append(session.Channels, channel)
+		session.Channels = append(session.Channels, channel.ID)
 	}
 
 }

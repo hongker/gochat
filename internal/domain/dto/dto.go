@@ -93,12 +93,13 @@ type MessageQueryResponse struct {
 	Items []Message `json:"items"`
 }
 type Message struct {
-	ID          string `json:"id"`
-	SessionID   string `json:"session_id"`
-	Content     string `json:"content"`
-	ContentType string `json:"content_type"`
-	CreatedAt   int64  `json:"created_at"`
-	Sender      User   `json:"sender"`
+	ID           string `json:"id"`
+	SessionID    string `json:"session_id"`
+	SessionTitle string `json:"session_title"`
+	Content      string `json:"content"`
+	ContentType  string `json:"content_type"`
+	CreatedAt    int64  `json:"created_at"`
+	Sender       User   `json:"sender"`
 }
 
 type ContactQueryRequest struct{}

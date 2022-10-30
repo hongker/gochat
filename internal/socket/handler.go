@@ -82,14 +82,14 @@ func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	timer.Stop()
 	delete(handler.timers, conn.ID())
 
-	uid, exist := conn.Property().Get("uid")
-	if !exist {
-		return
-	}
-	session := handler.bucket.GetSession(uid.(string))
-	for _, channel := range session.Channels {
-		handler.bucket.UnsubscribeChannel(channel, session)
-	}
+	//uid, exist := conn.Property().Get("uid")
+	//if !exist {
+	//	return
+	//}
+	//session := handler.bucket.GetSession(uid.(string))
+	//for _, channel := range session.Channels {
+	//	handler.bucket.UnsubscribeChannel(channel, session)
+	//}
 }
 
 func (handler *Handler) heartbeat(ctx *znet.Context, req *dto.HeartbeatRequest) (resp *dto.HeartbeatResponse, err error) {

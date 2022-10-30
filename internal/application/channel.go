@@ -6,8 +6,8 @@ import (
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
+	"gochat/internal/domain/dto"
 	"gochat/pkg/cmap"
-	"time"
 )
 
 type ChannelApplication struct {
@@ -26,6 +26,23 @@ func (app *ChannelApplication) List(ctx context.Context) []*Channel {
 	app.collection.Iterator(func(key string, item *Channel) {
 		items = append(items, item)
 	})
+	return items
+}
+
+func (app *ChannelApplication) GetJoined(ctx context.Context, uid string) []*Channel {
+	session := app.bucket.GetSession(uid)
+	if session == nil {
+		return nil
+	}
+
+	items := make([]*Channel, 0)
+	for _, id := range session.Channels {
+		item, exist := app.collection.Get(id)
+		if !exist {
+			continue
+		}
+		items = append(items, item)
+	}
 	return items
 }
 
@@ -61,21 +78,19 @@ func (app *ChannelApplication) Leave(ctx context.Context, id string, uid string)
 	return
 }
 
-func (app *ChannelApplication) Broadcast(ctx context.Context, msg *Message, codec codec.Codec, packet *codec.Packet) (err error) {
-	channel := app.bucket.GetChannel(msg.Target)
-	if channel == nil {
-		return
+func (app *ChannelApplication) Broadcast(ctx context.Context, msg dto.Message, codec codec.Codec, packet *codec.Packet) (err error) {
+	channel, exist := app.collection.Get(msg.SessionID)
+	if !exist {
+		return errors.NotFound("channel not found")
 	}
-
-	msg.ID = uuid.NewV4().String()
-	msg.CreatedAt = time.Now().UnixMilli()
+	msg.SessionTitle = channel.Name
 
 	buf, err := codec.Pack(packet, msg)
 	if err != nil {
 		return
 	}
 
-	app.bucket.BroadcastChannel(channel, buf)
+	app.bucket.BroadcastChannel(app.bucket.GetChannel(msg.SessionID), buf)
 	return
 }
 

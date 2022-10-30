@@ -7,8 +7,8 @@ import {userStore} from "../stores/counter";
  */
 let client = null
 export const connectSocket = (wsUrl) => {
-    console.log(wsUrl)
-    if (client && (client.readyState < 2)) {
+    console.log(wsUrl, client)
+    if (client) {
         console.log(client);
         return client
     } else {

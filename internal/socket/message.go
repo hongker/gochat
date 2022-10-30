@@ -11,6 +11,7 @@ import (
 // listSession return a list of user sessions
 func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListRequest) (resp *dto.SessionListResponse, err error) {
 	uid := handler.currentUser(ctx)
+	// private user sessions
 	sessions, err := handler.sessionApp.GetSessionList(ctx, uid)
 	if err != nil {
 		return
@@ -32,6 +33,26 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 		}
 		resp.Items = append(resp.Items, item)
 	}
+
+	// group sessions
+	channels := handler.channelApp.GetJoined(ctx, uid)
+	for _, channel := range channels {
+		item := dto.Session{
+			ID:    channel.ID,
+			Title: channel.Name,
+		}
+		last := handler.messageApp.GetLast(ctx, item.ID)
+		if last != nil {
+			item.Last = dto.Message{
+				ID:          last.ID,
+				Content:     last.Content,
+				ContentType: last.ContentType,
+				CreatedAt:   last.CreatedAt,
+			}
+		}
+		resp.Items = append(resp.Items, item)
+	}
+
 	return
 }
 
@@ -49,7 +70,7 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendReque
 	}
 
 	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
-	msg, err := handler.messageApp.Send(ctx, sender, req, codec.Default(), packet)
+	msg, err := handler.messageApp.Send(ctx, sender, receiver, req, codec.Default(), packet)
 	if err == nil {
 		// save user session
 		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: receiver.Name, Last: msg})

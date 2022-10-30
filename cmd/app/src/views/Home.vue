@@ -681,7 +681,7 @@
               <div class="user-chat-nav float-right">
                 <div data-toggle="tooltip" data-placement="bottom" title="Create group">
                   <!-- Button trigger modal -->
-                  <button type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal" data-target="#addgroup-exampleModal">
+                  <button @click="createGroupModalDisplay=true" type="button" class="btn btn-link text-decoration-none text-muted font-size-18 py-0" data-toggle="modal" data-target="#addgroup-exampleModal">
                     <i class="ri-group-line mr-1"></i>
                   </button>
                 </div>
@@ -690,12 +690,12 @@
               <h4 class="mb-4">Groups</h4>
 
               <!-- Start add group Modal -->
-              <div class="modal fade" id="addgroup-exampleModal" tabindex="-1" role="dialog" aria-labelledby="addgroup-exampleModalLabel" aria-hidden="true">
+              <div v-show="createGroupModalDisplay" class="modal fade" id="addgroup-exampleModal" tabindex="-1" role="dialog" aria-labelledby="addgroup-exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title font-size-16" id="addgroup-exampleModalLabel">Create New Group</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <button @click="createGroupModalDisplay=false" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
@@ -726,168 +726,12 @@
                                     </div>
 
                                     <ul class="list-unstyled contact-list">
-                                      <li>
+                                      <li v-for="(item, key) in contacts.items" :key="key">
                                         <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck1" checked="">
-                                          <label class="custom-control-label" for="memberCheck1">Albert Rodarte</label>
+                                          <input type="checkbox" class="custom-control-input" id="memberCheck1" v-model="createGroupRequest.members" :value="item.id">
+                                          <label class="custom-control-label" for="memberCheck1">{{item.name}}</label>
                                         </div>
                                       </li>
-
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck2">
-                                          <label class="custom-control-label" for="memberCheck2">Allison Etter</label>
-                                        </div>
-                                      </li>
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      C
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck3">
-                                          <label class="custom-control-label" for="memberCheck3">Craig Smiley</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      D
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck4">
-                                          <label class="custom-control-label" for="memberCheck4">Daniel Clay</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      I
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck5">
-                                          <label class="custom-control-label" for="memberCheck5">Iris Wells</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      J
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck6">
-                                          <label class="custom-control-label" for="memberCheck6">Juan Flakes</label>
-                                        </div>
-                                      </li>
-
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck7">
-                                          <label class="custom-control-label" for="memberCheck7">John Hall</label>
-                                        </div>
-                                      </li>
-
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck8">
-                                          <label class="custom-control-label" for="memberCheck8">Joy Southern</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      M
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck9">
-                                          <label class="custom-control-label" for="memberCheck9">Michael Hinton</label>
-                                        </div>
-                                      </li>
-
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck10">
-                                          <label class="custom-control-label" for="memberCheck10">Mary Farmer</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      P
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck11">
-                                          <label class="custom-control-label" for="memberCheck11">Phillis Griffin</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      R
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck12">
-                                          <label class="custom-control-label" for="memberCheck12">Rocky Jackson</label>
-                                        </div>
-                                      </li>
-
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <div class="p-3 font-weight-bold text-primary">
-                                      S
-                                    </div>
-
-                                    <ul class="list-unstyled contact-list">
-                                      <li>
-                                        <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck13">
-                                          <label class="custom-control-label" for="memberCheck13">Simon Velez</label>
-                                        </div>
-                                      </li>
-
                                     </ul>
                                   </div>
                                 </div>
@@ -2138,8 +1982,10 @@ export default {
       createGroupRequest: {
         name: '',
         description: '',
+        members: [],
       },
       createGroupDisabled: false,
+      createGroupModalDisplay: false,
 
       channels: {
         items: [],
@@ -2153,11 +1999,18 @@ export default {
       let user = userStore()
       that.user.uid = user.uid
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
-      this.sendSocketMessage(that.operation.heartbeat, {})
 
+
+    }
+    window.onbeforeunload = function() {
+      console.log("closed websocket")
+      that.ws.close();
     }
     this.ws.onclose = (e) => {
       console.log('websocket disconnected', e)
+    }
+    this.ws.onerror = (e) => {
+      console.log('websocket error', e)
     }
     this.ws.onmessage = ({ data }) => {
       var dataView = new DataView(data, 0);
@@ -2173,10 +2026,12 @@ export default {
         case this.operation.heartbeat:
           setTimeout(function () {
             that.sendSocketMessage(that.operation.heartbeat, {})
-          }, 10000)
+          }, 5000)
           break
         case this.operation.connect:
+          this.sendSocketMessage(that.operation.heartbeat, {})
           this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
+
           break
         case this.operation.profile:
           let profile = JSON.parse(msgBody)
@@ -2194,15 +2049,19 @@ export default {
           break
         case this.operation.newMessage:
           let msg = JSON.parse(msgBody)
+          let exist = false
           for (let i = 0; i < this.session.items.length; i++) {
             if (this.session.items[i].id === msg.session_id) {
               this.session.items[i].last = msg
-
+              exist = true
               break
             }
           }
           if (this.currentSessionId === msg.session_id) {
             this.messages.items.push(msg)
+          }
+          if (!exist) {
+            this.session.items.push({id: msg.session_id, title: msg.session_title, last: msg})
           }
 
           break
@@ -2230,9 +2089,7 @@ export default {
     }
 
   },
- unmounted() {
-    this.ws.close()
- },
+
 
   methods : {
     isToday(date) {
@@ -2285,6 +2142,9 @@ export default {
     createGroup() {
       this.createGroupDisabled = true
       this.sendSocketMessage(this.operation.createGroup, this.createGroupRequest)
+      this.createGroupRequest.members = []
+      this.createGroupRequest.name = ''
+      this.createGroupRequest.description = ''
     },
     queryHistory(sessionId, title) {
       this.currentSessionId = sessionId

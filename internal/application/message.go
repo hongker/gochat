@@ -31,10 +31,19 @@ func (app *MessageApplication) Query(ctx context.Context, sessionID string) (ite
 	items = app.messages[sessionID]
 	app.rmw.RUnlock()
 	return
-
 }
 
-func (app *MessageApplication) Send(ctx context.Context, sender *User, req *dto.MessageSendRequest, codec codec.Codec, packet *codec.Packet) (msg *Message, err error) {
+func (app *MessageApplication) GetLast(ctx context.Context, sessionID string) (item *Message) {
+	app.rmw.RLock()
+	items := app.messages[sessionID]
+	app.rmw.RUnlock()
+	if len(items) > 0 {
+		item = items[len(items)-1]
+	}
+	return
+}
+
+func (app *MessageApplication) Send(ctx context.Context, sender, receiver *User, req *dto.MessageSendRequest, codec codec.Codec, packet *codec.Packet) (msg *Message, err error) {
 	receiverSession := app.bucket.GetSession(req.Target)
 	if receiverSession == nil {
 		err = errors.NotFound("receiver not found")
@@ -59,24 +68,26 @@ func (app *MessageApplication) Send(ctx context.Context, sender *User, req *dto.
 	app.Save(senderSession.ID, msg)
 
 	receiverBuf, err := codec.Pack(packet, dto.Message{
-		ID:          msg.ID,
-		SessionID:   msg.Sender,
-		Content:     msg.Content,
-		ContentType: msg.ContentType,
-		CreatedAt:   msg.CreatedAt,
-		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+		ID:           msg.ID,
+		SessionID:    msg.Sender,
+		SessionTitle: sender.Name,
+		Content:      msg.Content,
+		ContentType:  msg.ContentType,
+		CreatedAt:    msg.CreatedAt,
+		Sender:       dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
 	})
 	if err == nil {
 		receiverSession.Send(receiverBuf)
 	}
 
 	senderBuf, err := codec.Pack(packet, dto.Message{
-		ID:          msg.ID,
-		SessionID:   msg.Target,
-		Content:     msg.Content,
-		ContentType: msg.ContentType,
-		CreatedAt:   msg.CreatedAt,
-		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+		ID:           msg.ID,
+		SessionID:    msg.Target,
+		SessionTitle: receiver.Name,
+		Content:      msg.Content,
+		ContentType:  msg.ContentType,
+		CreatedAt:    msg.CreatedAt,
+		Sender:       dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
 	})
 	if err == nil {
 		senderSession.Send(senderBuf)
