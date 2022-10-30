@@ -1457,6 +1457,11 @@
           <!-- start chat conversation -->
           <div class="chat-conversation p-3 p-lg-4" data-simplebar="init">
             <ul class="list-unstyled mb-0">
+              <li>
+                <div class="chat-day-title">
+                  <span class="title">Today</span>
+                </div>
+              </li>
               <li v-for="(item, key) in messages.items" :key="key" :class="{'right' : user.uid === item.sender.id}">
                 <div class="conversation-list">
                   <div class="chat-avatar">
@@ -1469,7 +1474,7 @@
                         <p class="mb-0">
                           {{item.content}}
                         </p>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:00</span></p>
+                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">{{formatTimer(item.created_at)}}</span></p>
                       </div>
                       <div class="dropdown align-self-start">
                         <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1488,43 +1493,39 @@
                 </div>
               </li>
 
-              <li class="right">
-                <div class="conversation-list">
-                  <div class="chat-avatar">
-                    <img src="/static/picture/avatar-1.jpg" alt="">
-                  </div>
+<!--              <li class="right">-->
+<!--                <div class="conversation-list">-->
+<!--                  <div class="chat-avatar">-->
+<!--                    <img src="/static/picture/avatar-1.jpg" alt="">-->
+<!--                  </div>-->
 
-                  <div class="user-chat-content">
-                    <div class="ctext-wrap">
-                      <div class="ctext-wrap-content">
-                        <p class="mb-0">
-                          Good morning, How are you? What about our next meeting?
-                        </p>
-                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:02</span></p>
-                      </div>
+<!--                  <div class="user-chat-content">-->
+<!--                    <div class="ctext-wrap">-->
+<!--                      <div class="ctext-wrap-content">-->
+<!--                        <p class="mb-0">-->
+<!--                          Good morning, How are you? What about our next meeting?-->
+<!--                        </p>-->
+<!--                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:02</span></p>-->
+<!--                      </div>-->
 
-                      <div class="dropdown align-self-start">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>
-                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="conversation-name">Patricia Smith</div>
-                  </div>
-                </div>
-              </li>
+<!--                      <div class="dropdown align-self-start">-->
+<!--                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                          <i class="ri-more-2-fill"></i>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                          <a class="dropdown-item" href="#">Copy <i class="ri-file-copy-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Save <i class="ri-save-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Forward <i class="ri-chat-forward-line float-right text-muted"></i></a>-->
+<!--                          <a class="dropdown-item" href="#">Delete <i class="ri-delete-bin-line float-right text-muted"></i></a>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="conversation-name">Patricia Smith</div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </li>-->
 
-              <li>
-                <div class="chat-day-title">
-                  <span class="title">Today</span>
-                </div>
-              </li>
+
 
 <!--              <li>-->
 <!--                <div class="conversation-list">-->
@@ -2141,6 +2142,9 @@ export default {
       let user = userStore()
       that.user.uid = user.uid
       this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
+      setInterval(function () {
+        that.sendSocketMessage(that.operation.heartbeat, {})
+      }, 5000)
 
     }
     this.ws.onmessage = ({ data }) => {
@@ -2203,7 +2207,38 @@ export default {
  unmounted() {
     this.ws.close()
  },
+
   methods : {
+    isToday(date) {
+      let today = new Date()
+      today.setHours(0)
+      today.setMinutes(0)
+      today.setSeconds(0)
+
+
+      return date > today
+    },
+    formatTimer(value) {
+      console.log("created_at="  , value)
+      let date = new Date(value);
+
+      let y = date.getFullYear();
+      let MM = date.getMonth() + 1;
+      MM = MM < 10 ? "0" + MM : MM;
+      let d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      let h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      let m = date.getMinutes();
+      m = m < 10 ? "0" + m : m;
+      let s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+
+      if (this.isToday(date)) {
+        return h + ":" + m;
+      }
+      return y + "-" + MM + "-" + d + " " + h + ":" + m;
+    },
     sendMessage() {
       this.sendSocketMessage(this.operation.sendMessage, {
         target: this.session.items[this.talkIndex].id,

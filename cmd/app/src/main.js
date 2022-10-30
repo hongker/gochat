@@ -21,6 +21,7 @@ app.use(store)
 app.use(router)
 app.provide('socket', connectSocket)
 app.provide('operation', {
+    heartbeat:1,
     connect: 2,
     updateProfile: 3,
     profile: 4,
