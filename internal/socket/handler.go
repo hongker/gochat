@@ -21,13 +21,14 @@ type Handler struct {
 	messageApp        *application.MessageApplication
 	channelApp        *application.ChannelApplication
 	userApp           *application.UserApplication
+	total             int
 }
 
 func NewHandler(bucket *bucket.Bucket) *Handler {
 	return &Handler{
 		bucket:            bucket,
 		timers:            map[string]*time.Timer{},
-		heartbeatInterval: time.Minute * 10,
+		heartbeatInterval: time.Second * 20,
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(bucket),
 		channelApp:        application.NewChannelApplication(bucket),
@@ -58,7 +59,8 @@ func (handler *Handler) Install(router *znet.Router) {
 }
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
-	component.Provider().Logger().Infof("[%s] connected", conn.ID())
+	handler.total++
+	component.Provider().Logger().Infof("[%s] connected, total=%d", conn.ID(), handler.total)
 	timer := time.NewTimer(handler.heartbeatInterval)
 	go func() {
 		defer runtime.HandleCrash()
@@ -72,6 +74,7 @@ func (handler *Handler) OnConnect(conn *znet.Connection) {
 
 }
 func (handler *Handler) OnDisconnect(conn *znet.Connection) {
+	handler.total--
 	component.Provider().Logger().Infof("[%s] Disconnected", conn.ID())
 	handler.rmw.RLock()
 	timer := handler.timers[conn.ID()]

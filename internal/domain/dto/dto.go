@@ -17,7 +17,8 @@ type User struct {
 	CreatedAt int64  `json:"created_at"`
 }
 type LoginRequest struct {
-	Name string `json:"name"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 type LoginResponse struct {
 	UID   string `json:"uid"`
@@ -28,7 +29,9 @@ type ConnectRequest struct {
 	UID   string `json:"uid"`
 	Token string `json:"token"`
 }
-type ConnectResponse struct{}
+type ConnectResponse struct {
+	ID string `json:"id"`
+}
 
 type UserUpdateRequest struct {
 	Name     string `json:"name"`
@@ -117,4 +120,8 @@ type Channel struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Owner string `json:"owner"`
+}
+
+type UserFindRequest struct {
+	Email string `json:"email"`
 }

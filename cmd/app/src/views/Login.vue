@@ -10,17 +10,22 @@
 						ImTalk
 					</span>
 
+          <div class="wrap-input100 validate-input m-b-23" data-validate = "Email is reauired">
+            <span class="label-input100">Email</span>
+            <input class="input100" type="email" name="email" v-model="user.email" placeholder="Type your Email">
+            <span class="focus-input100" data-symbol="&#xf206;"></span>
+          </div>
           <div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
             <span class="label-input100">Username</span>
             <input class="input100" type="text" name="username" v-model="user.name" placeholder="Type your username">
             <span class="focus-input100" data-symbol="&#xf206;"></span>
           </div>
 
-          <div class="wrap-input100 validate-input" data-validate="Password is required">
-            <span class="label-input100">Password</span>
-            <input class="input100" type="password" name="pass" placeholder="Type your password">
-            <span class="focus-input100" data-symbol="&#xf190;"></span>
-          </div>
+<!--          <div class="wrap-input100 validate-input" data-validate="Password is required">-->
+<!--            <span class="label-input100">Password</span>-->
+<!--            <input class="input100" type="password" name="pass" placeholder="Type your password">-->
+<!--            <span class="focus-input100" data-symbol="&#xf190;"></span>-->
+<!--          </div>-->
 
           <div class="text-right p-t-8 p-b-31">
             <a href="#">
@@ -74,13 +79,14 @@ export default {
     return {
       fullscreenLoading: false,
       user : {
-        name: "John",
+        name: "",
+        email: "",
       }
 
     }
   },
   mounted() {
-
+    console.log(import.meta.env)
   },
   methods: {
     submit() {
@@ -101,6 +107,7 @@ export default {
             that.$router.push({path:'/'})
           }, 1000)
         }else {
+          ElMessage.error(res.msg)
           that.fullscreenLoading = false
         }
 

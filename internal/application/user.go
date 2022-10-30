@@ -45,6 +45,17 @@ func (app *UserApplication) Auth(ctx context.Context, user *User) error {
 	return nil
 }
 
+func (app *UserApplication) FindByEmail(ctx context.Context, email string) (*User) {
+	var user *User
+	app.collection.Iterator(func(key string, val *User) {
+		if val.Email == email {
+			user = val
+		}
+	})
+
+	return user
+}
+
 func (app *UserApplication) Get(ctx context.Context, uid string) (*User, error) {
 	user, exist := app.collection.Get(uid)
 	if !exist {

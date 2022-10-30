@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"embed"
 	"github.com/ebar-go/ego/errors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -9,9 +10,14 @@ import (
 	"gochat/internal/application"
 	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
-	"os"
+	"io/fs"
+	"log"
+	"net/http"
+	"path"
 	"strings"
 )
+
+var Static embed.FS
 
 type Handler struct {
 	userApp *application.UserApplication
@@ -22,15 +28,42 @@ func NewHandler(bucket *bucket.Bucket) *Handler {
 		userApp: application.NewUserApplication(),
 	}
 }
-func (handler *Handler) Install(router *gin.Engine) {
-	router.POST("/user/auth", convertAction[dto.LoginRequest, dto.LoginResponse](handler.login))
 
-	router.Use(static.Serve("/", static.LocalFile("app/dist", true)))
+type serverFileSystemType struct {
+	http.FileSystem
+}
+
+func (f serverFileSystemType) Exists(prefix string, _path string) bool {
+	_, err := f.Open(path.Join(prefix, _path))
+	return err == nil
+}
+
+func mustFS(dir string) (serverFileSystem static.ServeFileSystem) {
+
+	sub, err := fs.Sub(Static, dir)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	serverFileSystem = serverFileSystemType{
+		http.FS(sub),
+	}
+
+	return
+}
+func (handler *Handler) Install(router *gin.Engine) {
+	router.POST("/api/user/auth", convertAction[dto.LoginRequest, dto.LoginResponse](handler.login))
+	router.POST("/api/user/find", convertAction[dto.UserFindRequest, dto.UserResponse](handler.findUser))
+
+	//router.Use(static.Serve("/", static.LocalFile("app/dist", true)))
+	router.Use(static.Serve("/", mustFS("app/dist")))
 	router.NoRoute(func(ctx *gin.Context) {
 		accept := ctx.Request.Header.Get("Accept")
 		flag := strings.Contains(accept, "text/html")
 		if flag {
-			content, err := os.ReadFile("app/dist/index.html")
+			content, err := Static.ReadFile("app/dist/index.html")
 			if err != nil {
 				ctx.AbortWithStatus(404)
 			}
@@ -44,13 +77,38 @@ func (handler *Handler) Install(router *gin.Engine) {
 }
 
 func (handler *Handler) login(ctx context.Context, req *dto.LoginRequest) (resp *dto.LoginResponse, err error) {
-	user := &application.User{Name: req.Name}
+	user := handler.userApp.FindByEmail(ctx, req.Email)
+	if user != nil {
+		if user.Name != req.Name {
+			err = errors.InvalidParam("this email was existed")
+			return
+		}
 
-	err = handler.userApp.Auth(ctx, user)
-	if err != nil {
+	} else {
+		user = &application.User{Name: req.Name, Email: req.Email}
+
+		err = handler.userApp.Auth(ctx, user)
+		if err != nil {
+			return
+		}
+	}
+
+	resp = &dto.LoginResponse{UID: user.ID, Token: uuid.NewV4().String()}
+	return
+}
+func (handler *Handler) findUser(ctx context.Context, req *dto.UserFindRequest) (resp *dto.UserResponse, err error) {
+	user := handler.userApp.FindByEmail(ctx, req.Email)
+	if user == nil {
+		err = errors.NotFound("user not found")
 		return
 	}
-	resp = &dto.LoginResponse{UID: user.ID, Token: uuid.NewV4().String()}
+
+	resp = &dto.UserResponse{
+		ID:     user.ID,
+		Name:   user.Name,
+		Email:  user.Email,
+		Avatar: user.Avatar,
+	}
 	return
 }
 

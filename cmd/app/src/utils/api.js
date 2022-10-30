@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-    baseURL:"http://localhost:8080",//该部分写的是我们使用接口的公共代理
+    baseURL: "/api",//该部分写的是我们使用接口的公共代理
     timeout:2500//请求时间，在超时前，所有请求都会等待 2.5 秒，由于网络原因，我们可以把时间修改的长一点
 });
 instance.interceptors.request.use(function (config) {

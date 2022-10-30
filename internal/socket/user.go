@@ -12,6 +12,7 @@ func (handler *Handler) connect(ctx *znet.Context, req *dto.ConnectRequest) (res
 	handler.setCurrentUser(ctx, req.UID)
 
 	handler.bucket.AddSession(bucket.NewSession(req.UID, ctx.Conn()))
+	resp = &dto.ConnectResponse{ID: ctx.Conn().ID()}
 
 	return
 }

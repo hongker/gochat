@@ -1924,6 +1924,7 @@
 
 import {userStore} from "../stores/counter";
 import { ElMessage } from 'element-plus'
+import {sendRequest} from "../utils/api";
 
 
 export default {
@@ -1985,112 +1986,135 @@ export default {
 
       channels: {
         items: [],
-      }
+      },
+      lockReconnect: false,
     }
   },
   mounted() {
-    this.ws = this.socket('ws://127.0.0.1:8082')
-    var that = this
-    this.ws.onopen = () => {
-      let user = userStore()
-      that.user.uid = user.uid
-      this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
-
-
-    }
-    window.onbeforeunload = function() {
-      console.log("closed websocket")
-      that.ws.close();
-    }
-    this.ws.onclose = (e) => {
-      console.log('websocket disconnected', e)
-    }
-    this.ws.onerror = (e) => {
-      console.log('websocket error', e)
-    }
-    this.ws.onmessage = ({ data }) => {
-      var dataView = new DataView(data, 0);
-      var packetLen = dataView.getInt32(this.packet.packetOffset);
-      var op = dataView.getInt16(this.packet.opOffset);
-      var contentType = dataView.getInt16(this.packet.contentTypeOffset);
-      var seq = dataView.getInt16(this.packet.seqOffset);
-      var msgBody = this.textDecoder.decode(data.slice(this.packet.rawHeaderLen, packetLen));
-
-      console.log("header: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
-
-      switch (op) {
-        case this.operation.heartbeat:
-          setTimeout(function () {
-            that.sendSocketMessage(that.operation.heartbeat, {})
-          }, 5000)
-          break
-        case this.operation.connect:
-          this.sendSocketMessage(that.operation.heartbeat, {})
-          this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
-
-          break
-        case this.operation.profile:
-          let profile = JSON.parse(msgBody)
-          this.user.location = profile.location
-          // this.user.avatar = profile.avatar
-          this.user.email = profile.email
-          this.user.name = profile.name
-          break
-        case this.operation.updateProfile:
-          this.updateProfileButtonDisabled = false
-          this.updateProfileInputShow = false
-          break
-        case this.operation.sendMessage:
-          // this.inviteContactDisabled = false
-          break
-        case this.operation.newMessage:
-          let msg = JSON.parse(msgBody)
-          let exist = false
-          for (let i = 0; i < this.session.items.length; i++) {
-            if (this.session.items[i].id === msg.session_id) {
-              this.session.items[i].last = msg
-              exist = true
-              break
-            }
-          }
-          if (this.currentSessionId === msg.session_id) {
-            this.messages.items.push(msg)
-          }
-          if (!exist) {
-            this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
-          }
-
-          break
-
-        case this.operation.queryContacts:
-          this.contacts = JSON.parse(msgBody)
-          break
-        case this.operation.listSession:
-          this.session = JSON.parse(msgBody)
-          break
-        case this.operation.queryHistory:
-          this.messages = JSON.parse(msgBody)
-          break
-        case this.operation.queryChannel:
-          this.channels = JSON.parse(msgBody)
-          break
-        case this.operation.createGroup:
-          this.createGroupDisabled = false
-          break
-        case this.operation.joinGroup:
-          break
-        default:
-          console.log("unknown operation")
-      }
-
-    }
+    this.initWebsocket()
 
   },
 
 
   methods : {
-    showInviteContactModal() {
+    initWebsocket() {
+      let user = userStore()
+      this.user.uid = user.uid
+      let wsUrl = import.meta.env.VITE_WS_URL
+      this.ws = new WebSocket(wsUrl)
+      this.ws.binaryType = 'arraybuffer';
+      var that = this
+      this.ws.onopen = () => {
+        console.log("websocket connect success", this.ws)
+        this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: that.token})
+        setTimeout(function () {
+          that.sendSocketMessage(that.operation.heartbeat, {})
+        }, 5000)
 
+      }
+      window.onbeforeunload = function() {
+        console.log("closed websocket")
+        this.lockReconnect = true
+        that.ws.close();
+      }
+      this.ws.onclose = (e) => {
+        console.log('websocket disconnect: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
+        // reconnect
+        if (this.lockReconnect === false) {
+          that.reconnectWebsocket();
+        }
+      }
+      this.ws.onerror = (e) => {
+        console.log('websocket error', e)
+        that.reconnectWebsocket();
+      }
+      this.ws.onmessage = ({ data }) => {
+        var dataView = new DataView(data, 0);
+        var packetLen = dataView.getInt32(this.packet.packetOffset);
+        var op = dataView.getInt16(this.packet.opOffset);
+        var contentType = dataView.getInt16(this.packet.contentTypeOffset);
+        var seq = dataView.getInt16(this.packet.seqOffset);
+        var msgBody = this.textDecoder.decode(data.slice(this.packet.rawHeaderLen, packetLen));
+
+        console.log("header: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
+
+        switch (op) {
+          case this.operation.heartbeat:
+            setTimeout(function () {
+              that.sendSocketMessage(that.operation.heartbeat, {})
+            }, 10000)
+            break
+          case this.operation.connect:
+
+            this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
+
+            break
+          case this.operation.profile:
+            let profile = JSON.parse(msgBody)
+            this.user.location = profile.location
+            // this.user.avatar = profile.avatar
+            this.user.email = profile.email
+            this.user.name = profile.name
+            break
+          case this.operation.updateProfile:
+            this.updateProfileButtonDisabled = false
+            this.updateProfileInputShow = false
+            break
+          case this.operation.sendMessage:
+            break
+          case this.operation.newMessage:
+            let msg = JSON.parse(msgBody)
+            let exist = false
+            for (let i = 0; i < this.session.items.length; i++) {
+              if (this.session.items[i].id === msg.session_id) {
+                this.session.items[i].last = msg
+                exist = true
+                break
+              }
+            }
+            if (this.currentSessionId === msg.session_id) {
+              this.messages.items.push(msg)
+            }
+            if (!exist) {
+              this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
+            }
+
+            break
+
+          case this.operation.queryContacts:
+            this.contacts = JSON.parse(msgBody)
+            break
+          case this.operation.listSession:
+            this.session = JSON.parse(msgBody)
+            break
+          case this.operation.queryHistory:
+            this.messages = JSON.parse(msgBody)
+            break
+          case this.operation.queryChannel:
+            this.channels = JSON.parse(msgBody)
+            break
+          case this.operation.createGroup:
+            this.createGroupDisabled = false
+            break
+          case this.operation.joinGroup:
+            break
+          default:
+            console.log("unknown operation")
+        }
+
+      }
+    },
+    reconnectWebsocket() {
+      if (this.lockReconnect) {
+        return
+      }
+      console.log("reconnect")
+      this.lockReconnect = true
+      let that = this
+      let tt = setTimeout(function () {
+        that.initWebsocket();
+        that.lockReconnect = false;
+      }, 2000);
     },
     showCreateGroupModal() {
       this.queryContacts()
@@ -2105,7 +2129,6 @@ export default {
       return date > today
     },
     formatTimer(value) {
-      console.log("created_at="  , value)
       let date = new Date(value);
 
       let y = date.getFullYear();
@@ -2177,16 +2200,32 @@ export default {
     inviteContact() {
       let that = this;
       that.inviteContactDisabled = true
-      this.sendSocketMessage(this.operation.sendMessage, {
-        target: this.inviteContactRequest.email,
-        content: this.inviteContactRequest.content,
-        content_type: 'text',
+      sendRequest("/user/find", {email: this.inviteContactRequest.email}).then((res) => {
+        if (res.code !== 0) {
+          ElMessage.error(res.msg)
+          that.inviteContactDisabled = false
+          return
+        }
+        console.log(res.data.id , that.user.uid)
+
+        if (res.data.id === that.user.uid) {
+          ElMessage.error("can't invite yourself")
+          that.inviteContactDisabled = false
+          return
+        }
+
+        that.sendSocketMessage(this.operation.sendMessage, {
+          target: res.data.id,
+          content: that.inviteContactRequest.content,
+          content_type: 'text',
+        })
+        setTimeout(function () {
+          that.inviteContactDisabled = false
+          that.inviteContactDialogShow = false
+          that.queryContacts()
+        }, 500)
       })
-      setTimeout(function () {
-        that.inviteContactDisabled = false
-        that.inviteContactDialogShow = false
-        that.queryContacts()
-      }, 500)
+
 
     },
     showUpdateProfileInput() {
