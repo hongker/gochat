@@ -733,8 +733,8 @@
                                     <ul class="list-unstyled contact-list">
                                       <li v-for="(item, key) in contacts.items" :key="key">
                                         <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="memberCheck1" v-model="createGroupRequest.members" :value="item.id">
-                                          <label class="custom-control-label" for="memberCheck1">{{item.name}}</label>
+                                          <input type="checkbox" class="custom-control-input" :id="key" v-model="createGroupRequest.members" :value="item.id">
+                                          <label class="custom-control-label" :for="key">{{item.name}}</label>
                                         </div>
                                       </li>
                                     </ul>
