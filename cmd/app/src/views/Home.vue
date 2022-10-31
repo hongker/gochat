@@ -2409,6 +2409,8 @@ export default {
         setTimeout(function () {
           that.inviteContactDisabled = false
           that.inviteContactDialogShow = false
+          that.inviteContactRequest.content = ''
+          that.inviteContactRequest.email = ''
           that.queryContacts()
         }, 500)
       })
