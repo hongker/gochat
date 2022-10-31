@@ -23,12 +23,12 @@
       <div class="flex-lg-column my-auto">
         <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
           <li class="nav-item" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="Profile">
-            <a class="nav-link" id="pills-user-tab" data-toggle="pill" href="#pills-user" role="tab">
+            <a class="nav-link active" id="pills-user-tab" data-toggle="pill" href="#pills-user" role="tab">
               <i class="ri-user-2-line"></i>
             </a>
           </li>
           <li class="nav-item" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="Chats">
-            <a @click="listSession" class="nav-link active" id="pills-chat-tab" data-toggle="pill" href="#pills-chat" role="tab">
+            <a @click="listSession" class="nav-link " id="pills-chat-tab" data-toggle="pill" href="#pills-chat" role="tab">
               <i class="ri-message-3-line"></i>
             </a>
           </li>
@@ -65,7 +65,7 @@
       <div class="flex-lg-column d-none d-lg-block">
         <ul class="nav side-menu-nav justify-content-center">
           <li class="nav-item">
-            <a class="nav-link" id="light-dark" href="/web/dark" @click="dark" data-toggle="tooltip" data-trigger="hover" data-placement="right" title="Dark / Light Mode">
+            <a class="nav-link" id="light-dark" href="#" @click="dark" data-toggle="tooltip" data-trigger="hover" data-placement="right" title="Dark / Light Mode">
               <i class="ri-sun-line theme-mode-icon"></i>
             </a>
           </li>
@@ -92,7 +92,7 @@
 
       <div class="tab-content">
         <!-- Start Profile tab-pane -->
-        <div class="tab-pane" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
+        <div class="tab-pane active" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
           <!-- Start profile content -->
           <div>
             <div class="px-4 pt-4">
@@ -346,7 +346,7 @@
         <!-- End Profile tab-pane -->
 
         <!-- Start chats tab-pane -->
-        <div class="tab-pane fade show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
+        <div class="tab-pane fade show " id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
           <!-- Start chats content -->
           <div>
             <div class="px-4 pt-4">
@@ -1990,7 +1990,7 @@ export default {
       },
 
       lockReconnect: false,
-      timeout: 10 * 1000, //58秒一次心跳
+      timeout: 10 * 1000, //10秒一次心跳
       timeoutObj: null, //心跳心跳倒计时
       serverTimeoutObj: null, //心跳倒计时
       timeoutnum: null, //断开 重连倒计时
