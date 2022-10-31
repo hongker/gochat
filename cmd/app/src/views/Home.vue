@@ -1988,21 +1988,202 @@ export default {
       channels: {
         items: [],
       },
+
       lockReconnect: false,
+      timeout: 10 * 1000, //58秒一次心跳
+      timeoutObj: null, //心跳心跳倒计时
+      serverTimeoutObj: null, //心跳倒计时
+      timeoutnum: null, //断开 重连倒计时
+      websock: null,
+
     }
   },
-  mounted() {
+  created() {
+    this.initWebSocket()
     let that = this
-    setTimeout(function () {
-      that.initWebsocket()
-    }, 2000)
-
-
+    window.onbeforeunload = function(event) {
+      console.log("关闭WebSocket连接！");
+      that.lockReconnect = true
+      that.websock.close();
+    }
+  },
+  unmounted() {
+    this.lockReconnect = true
+    this.websock.close()
   },
 
 
   methods : {
-    initWebsocket() {
+    initWebSocket() {
+      //初始化weosocket
+
+      let wsUrl = import.meta.env.VITE_WS_URL
+      this.websock = new WebSocket(wsUrl);
+      this.websock.binaryType = 'arraybuffer';
+      // 客户端接收服务端数据时触发
+      this.websock.onmessage = this.onMessage;
+      // 连接建立时触发
+      this.websock.onopen = this.onOpen;
+      // 通信发生错误时触发
+      this.websock.onerror = this.onError;
+      // 连接关闭时触发
+      this.websock.onclose = this.onClose;
+    },
+    // 连接建立时触发
+    onOpen() {
+      let user = userStore()
+      this.user.uid = user.uid
+      this.sendSocketMessage(this.operation.connect, {uid: user.uid, token: user.token})
+
+      //开启心跳
+      this.start();
+
+      //连接建立之后执行send方法发送数据
+      // let actions = {"room":"007854ce7b93476487c7ca8826d17eba","info":"1121212"};
+      // this.websocketsend(JSON.stringify(actions));
+
+    },
+    // 通信发生错误时触发
+    onError() {
+      console.log("出现错误");
+      this.reconnect();
+    },
+    // 客户端接收服务端数据时触发
+    onMessage(e) {
+      console.log(e.data);
+      //收到服务器信息，心跳重置
+      this.reset();
+
+      var data = e.data
+      var dataView = new DataView(data, 0);
+      var packetLen = dataView.getInt32(this.packet.packetOffset);
+      var op = dataView.getInt16(this.packet.opOffset);
+      var contentType = dataView.getInt16(this.packet.contentTypeOffset);
+      var seq = dataView.getInt16(this.packet.seqOffset);
+      var msgBody = this.textDecoder.decode(data.slice(this.packet.rawHeaderLen, packetLen));
+
+      console.log("header: packetLen=" + packetLen,  "op=" + op,  "contentType=" + contentType, "seq=" + seq, "msgBody=" + msgBody);
+
+      switch (op) {
+        case this.operation.heartbeat:
+
+          break
+        case this.operation.connect:
+
+          this.sendSocketMessage(this.operation.profile, {id: this.user.uid,})
+
+          break
+        case this.operation.profile:
+          let profile = JSON.parse(msgBody)
+          this.user.location = profile.location
+          // this.user.avatar = profile.avatar
+          this.user.email = profile.email
+          this.user.name = profile.name
+          break
+        case this.operation.updateProfile:
+          this.updateProfileButtonDisabled = false
+          this.updateProfileInputShow = false
+          break
+        case this.operation.sendMessage:
+          break
+        case this.operation.newMessage:
+          let msg = JSON.parse(msgBody)
+          let exist = false
+          for (let i = 0; i < this.session.items.length; i++) {
+            if (this.session.items[i].id === msg.session_id) {
+              this.session.items[i].last = msg
+              exist = true
+              break
+            }
+          }
+          if (this.currentSessionId === msg.session_id) {
+            this.messages.items.push(msg)
+          }
+          if (!exist) {
+            this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
+          }
+
+          break
+
+        case this.operation.queryContacts:
+          this.contacts = JSON.parse(msgBody)
+          break
+        case this.operation.listSession:
+          this.session = JSON.parse(msgBody)
+          break
+        case this.operation.queryHistory:
+          this.messages = JSON.parse(msgBody)
+          break
+        case this.operation.queryChannel:
+          this.channels = JSON.parse(msgBody)
+          break
+        case this.operation.createGroup:
+          this.createGroupDisabled = false
+          break
+        case this.operation.joinGroup:
+          break
+        default:
+          console.log("unknown operation")
+      }
+    },
+    send(Data) {
+      //数据发送
+      this.websock.send(Data);
+    },
+    // 连接关闭时触发
+    onClose(e) {
+      //关闭
+      console.log("断开连接", e);
+      //重连
+      this.reconnect();
+    },
+    reconnect() {
+      //重新连接
+      var that = this;
+      if (that.lockReconnect) {
+        return;
+      }
+      that.lockReconnect = true;
+      //没连接上会一直重连，设置延迟避免请求过多
+      that.timeoutnum && clearTimeout(that.timeoutnum);
+      that.timeoutnum = setTimeout(function () {
+        //新连接
+        that.initWebSocket();
+        that.lockReconnect = false;
+      }, 5000);
+    },
+    reset() {
+      //重置心跳
+      var that = this;
+      //清除时间
+      clearTimeout(that.timeoutObj);
+      clearTimeout(that.serverTimeoutObj);
+      //重启心跳
+      that.start();
+    },
+    start() {
+      //开启心跳
+      console.log("开启心跳");
+      var self = this;
+      self.timeoutObj && clearTimeout(self.timeoutObj);
+      self.serverTimeoutObj && clearTimeout(self.serverTimeoutObj);
+      self.timeoutObj = setTimeout(function () {
+        //这里发送一个心跳，后端收到后，返回一个心跳消息，
+        if (self.websock.readyState === 1) {
+          //如果连接正常
+          self.sendSocketMessage(self.operation.heartbeat, {})
+        } else {
+          //否则重连
+          self.reconnect();
+        }
+        self.serverTimeoutObj = setTimeout(function () {
+          //超时关闭
+          self.websock.close();
+        }, self.timeout);
+      }, self.timeout);
+    },
+
+    initWebsocketOld() {
       let user = userStore()
       this.user.uid = user.uid
       let wsUrl = import.meta.env.VITE_WS_URL
@@ -2260,7 +2441,7 @@ export default {
       headerView.setInt16(this.packet.seqOffset, this.packet.seq++);
       var buf = this.mergeArrayBuffer(headerBuf, bodyBuf)
 
-      this.ws.send(buf)
+      this.websock.send(buf)
       console.log('send socket message successfully:', operate)
     }
 
