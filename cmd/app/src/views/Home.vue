@@ -901,7 +901,7 @@
                 </div>
               </div>
               <h4 class="mb-4">Contacts</h4>
-              <el-dialog v-model="inviteContactDialogShow" title="Add Contact">
+              <el-dialog v-model="inviteContactDialogShow" width="75%" title="Add Contact">
                 <form>
                   <div class="form-group mb-4">
                     <label for="addcontactemail-input">Email</label>
