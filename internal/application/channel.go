@@ -78,14 +78,14 @@ func (app *ChannelApplication) Leave(ctx context.Context, id string, uid string)
 	return
 }
 
-func (app *ChannelApplication) Broadcast(ctx context.Context, msg dto.Message, codec codec.Codec, packet *codec.Packet) (err error) {
+func (app *ChannelApplication) Broadcast(ctx context.Context, msg dto.Message, packet codec.Codec) (err error) {
 	channel, exist := app.collection.Get(msg.SessionID)
 	if !exist {
 		return errors.NotFound("channel not found")
 	}
 	msg.SessionTitle = channel.Name
 
-	buf, err := codec.Pack(packet, msg)
+	buf, err := packet.Pack(msg)
 	if err != nil {
 		return
 	}

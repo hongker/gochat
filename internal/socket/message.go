@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/znet"
 	"github.com/ebar-go/znet/codec"
 	"gochat/api"
@@ -61,6 +62,9 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 // sendMessage sends a message to receiver
 func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendRequest) (resp *dto.MessageSendResponse, err error) {
 	uid := handler.currentUser(ctx)
+	if req.Target == uid {
+		return nil, errors.InvalidParam("can't send message to yourself")
+	}
 	var sender, receiver *application.User
 	sender, err = handler.userApp.Get(ctx, uid)
 	if err != nil {
@@ -71,12 +75,14 @@ func (handler *Handler) sendMessage(ctx *znet.Context, req *dto.MessageSendReque
 		return
 	}
 
-	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
-	msg, err := handler.messageApp.Send(ctx, sender, receiver, req, codec.Default(), packet)
+	packet := codec.Factory().NewWithHeader(codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Header().ContentType})
+
+	sessionId := handler.sessionApp.BuildSessionId(uid, req.Target)
+	msg, err := handler.messageApp.Send(ctx, sessionId, sender, receiver, req, packet)
 	if err == nil {
 		// save user session
-		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: req.Target, Title: receiver.Name, Last: msg})
-		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: uid, Title: sender.Name, Last: msg})
+		handler.sessionApp.SaveSession(ctx, uid, &application.Session{ID: sessionId, Title: receiver.Name, Last: msg})
+		handler.sessionApp.SaveSession(ctx, req.Target, &application.Session{ID: sessionId, Title: sender.Name, Last: msg})
 
 		handler.userApp.SaveContact(ctx, uid, req.Target)
 		handler.userApp.SaveContact(ctx, req.Target, uid)
@@ -91,7 +97,7 @@ func (handler *Handler) queryMessage(ctx *znet.Context, req *dto.MessageQueryReq
 		return
 	}
 
-	resp = &dto.MessageQueryResponse{Items: make([]dto.Message, len(items))}
+	resp = &dto.MessageQueryResponse{SessionID: req.SessionID, Items: make([]dto.Message, len(items))}
 	for idx, item := range items {
 		message := dto.Message{
 			ID:          item.ID,

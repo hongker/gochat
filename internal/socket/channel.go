@@ -45,7 +45,7 @@ func (handler *Handler) leaveChannel(ctx *znet.Context, req *dto.ChannelLeaveReq
 }
 
 func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroadcastRequest) (resp *dto.ChannelBroadcastResponse, err error) {
-	packet := &codec.Packet{Header: codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Request().Header.ContentType}}
+	packet := codec.Factory().NewWithHeader(codec.Header{Operate: api.OperatePushMessage, ContentType: ctx.Header().ContentType})
 
 	uid := handler.currentUser(ctx)
 	sender, err := handler.userApp.Get(ctx, uid)
@@ -71,7 +71,7 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroa
 		ContentType: msg.ContentType,
 		CreatedAt:   msg.CreatedAt,
 		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
-	}, codec.Default(), packet)
+	}, packet)
 
 	return
 }

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"fmt"
 	"gochat/pkg/cmap"
 )
 
@@ -18,6 +19,13 @@ type Session struct {
 func (app *SessionApplication) GetSessionList(ctx context.Context, uid string) ([]*Session, error) {
 	items, _ := app.collection.Get(uid)
 	return items, nil
+}
+
+func (app *SessionApplication) BuildSessionId(uid, targetId string) string {
+	if uid > targetId {
+		return fmt.Sprintf("%s:%s", uid, targetId)
+	}
+	return fmt.Sprintf("%s:%s", targetId, uid)
 }
 
 func (app *SessionApplication) SaveSession(ctx context.Context, uid string, session *Session) (err error) {

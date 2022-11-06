@@ -8,14 +8,14 @@ import (
 
 // WriteRequestLog represents print request log middleware
 func (handler *Handler) WriteRequestLog(ctx *znet.Context) {
-	component.Provider().Logger().Infof("[%s] request log: header=%+v, body=%v ", ctx.Conn().ID(), ctx.Request().Header, string(ctx.Request().Body))
+	component.Provider().Logger().Infof("[%s] request log: header=%+v, body=%v ", ctx.Conn().ID(), ctx.Header(), string(ctx.Request()))
 	ctx.Next()
 }
 
 // CheckLogin validates the login credentials
 func (handler *Handler) CheckLogin(ctx *znet.Context) {
 	// skip when operate is Login
-	if ctx.Request().Header.Operate == api.OperateConnect {
+	if ctx.Header().Operate == api.OperateConnect {
 		ctx.Next()
 		return
 	}

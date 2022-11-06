@@ -60,7 +60,7 @@ func (handler *Handler) Install(router *znet.Router) {
 
 func (handler *Handler) OnConnect(conn *znet.Connection) {
 	handler.total++
-	component.Provider().Logger().Infof("[%s] connected, total=%d", conn.ID(), handler.total)
+	component.Provider().Logger().Infof("[%s] connected:%s, total=%d", conn.ID(), conn.IP(), handler.total)
 	timer := time.NewTimer(handler.heartbeatInterval)
 	go func() {
 		defer runtime.HandleCrash()
@@ -75,7 +75,7 @@ func (handler *Handler) OnConnect(conn *znet.Connection) {
 }
 func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	handler.total--
-	component.Provider().Logger().Infof("[%s] Disconnected", conn.ID())
+	component.Provider().Logger().Infof("[%s] Disconnected:%s", conn.ID(), conn.IP())
 	handler.rmw.RLock()
 	timer := handler.timers[conn.ID()]
 	handler.rmw.RUnlock()

@@ -94,7 +94,8 @@ type MessageQueryRequest struct {
 	SessionID string `json:"session_id"`
 }
 type MessageQueryResponse struct {
-	Items []Message `json:"items"`
+	SessionID string    `json:"session_id"`
+	Items     []Message `json:"items"`
 }
 type Message struct {
 	ID           string `json:"id"`

@@ -779,7 +779,7 @@
 
               <ul class="list-unstyled chat-list">
                 <li v-for="(item, key) in channels.items" :key="key">
-                  <a @click="queryHistory(item.id, item.name)" href="#">
+                  <a @click="queryHistory(item)" href="#">
                     <div class="media align-items-center">
                       <div class="chat-user-img mr-3">
                         <div class="avatar-xs">
@@ -1155,7 +1155,7 @@
                   </div>
                 </div>
                 <!-- end Privacy card -->
-
+                SessionApplication
                 <div class="card shadow-none border mb-2">
                   <a href="#profile-setting-securitynoticollapse" class="text-dark collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="profile-setting-securitynoticollapse">
                     <div class="card-header" id="profile-setting-securitynotiheading">
@@ -1970,6 +1970,7 @@ export default {
       currentSessionId: '',
       currentSessionTitle: '',
       messages: {
+        session_id:'',
         items: [],
       },
       sendMessageRequest: {
@@ -1990,7 +1991,7 @@ export default {
       },
 
       lockReconnect: false,
-      timeout: 10 * 1000, //10秒一次心跳
+      timeout: 60 * 1000, //10秒一次心跳
       timeoutObj: null, //心跳心跳倒计时
       serverTimeoutObj: null, //心跳倒计时
       timeoutnum: null, //断开 重连倒计时
@@ -2100,7 +2101,7 @@ export default {
             this.messages.items.push(msg)
           }
           if (!exist) {
-            this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
+            this.session.items.push({id: msg.session_id, type: msg.session_type,title: msg.session_title, last: msg})
           }
 
           break
@@ -2112,7 +2113,11 @@ export default {
           this.session = JSON.parse(msgBody)
           break
         case this.operation.queryHistory:
-          this.messages = JSON.parse(msgBody)
+          let resp = JSON.parse(msgBody)
+          if (resp.session_id === this.currentSessionId) {
+            this.messages = resp
+          }
+
           break
         case this.operation.queryChannel:
           this.channels = JSON.parse(msgBody)
@@ -2262,7 +2267,7 @@ export default {
               this.messages.items.push(msg)
             }
             if (!exist) {
-              this.session.items.push({id: msg.session_id, type: isNaN(msg.session_id) ? 'group': 'user',title: msg.session_title, last: msg})
+              this.session.items.push({id: msg.session_id, type: msg.session_type,title: msg.session_title, last: msg})
             }
 
             break
@@ -2366,11 +2371,11 @@ export default {
       this.createGroupRequest.name = ''
       this.createGroupRequest.description = ''
     },
-    queryHistory(sessionId, title) {
+    queryHistory(session) {
       this.showChat = true
-      this.currentSessionId = sessionId
-      this.currentSessionTitle = title
-      this.sendMessageRequest.type = isNaN(sessionId) ? 'group': 'user'
+      this.currentSessionId = session.id
+      this.currentSessionTitle = session.title
+      this.sendMessageRequest.type = session.type
       // this.talkIndex = index
       // let sessionId = this.session.items[index].id
       this.sendSocketMessage(this.operation.queryHistory, {session_id: sessionId})

@@ -5,6 +5,7 @@ import (
 	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
+	"gochat/api"
 	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
 	"sync"
@@ -19,6 +20,8 @@ type MessageApplication struct {
 
 type Message struct {
 	ID          string `json:"id"`
+	SessionID   string `json:"session_id"`
+	SessionType string `json:"session_type"`
 	Content     string `json:"content"`
 	ContentType string `json:"content_type"`
 	Target      string `json:"target"`
@@ -43,7 +46,7 @@ func (app *MessageApplication) GetLast(ctx context.Context, sessionID string) (i
 	return
 }
 
-func (app *MessageApplication) Send(ctx context.Context, sender, receiver *User, req *dto.MessageSendRequest, codec codec.Codec, packet *codec.Packet) (msg *Message, err error) {
+func (app *MessageApplication) Send(ctx context.Context, sessionId string, sender, receiver *User, req *dto.MessageSendRequest, packet codec.Codec) (msg *Message, err error) {
 	receiverSession := app.bucket.GetSession(req.Target)
 	if receiverSession == nil {
 		err = errors.NotFound("receiver not found")
@@ -57,6 +60,8 @@ func (app *MessageApplication) Send(ctx context.Context, sender, receiver *User,
 
 	msg = &Message{
 		ID:          uuid.NewV4().String(),
+		SessionID:   sessionId,
+		SessionType: api.SessionTypeUser,
 		Content:     req.Content,
 		ContentType: req.ContentType,
 		Target:      req.Target,
@@ -64,12 +69,12 @@ func (app *MessageApplication) Send(ctx context.Context, sender, receiver *User,
 		CreatedAt:   time.Now().UnixMilli(),
 	}
 
-	app.Save(receiverSession.ID, msg)
-	app.Save(senderSession.ID, msg)
+	//app.Save(receiverSession.ID, msg)
+	app.Save(msg.SessionID, msg)
 
-	receiverBuf, err := codec.Pack(packet, dto.Message{
+	receiverBuf, err := packet.Pack(dto.Message{
 		ID:           msg.ID,
-		SessionID:    msg.Sender,
+		SessionID:    msg.SessionID,
 		SessionTitle: sender.Name,
 		Content:      msg.Content,
 		ContentType:  msg.ContentType,
@@ -80,9 +85,9 @@ func (app *MessageApplication) Send(ctx context.Context, sender, receiver *User,
 		receiverSession.Send(receiverBuf)
 	}
 
-	senderBuf, err := codec.Pack(packet, dto.Message{
+	senderBuf, err := packet.Pack(dto.Message{
 		ID:           msg.ID,
-		SessionID:    msg.Target,
+		SessionID:    msg.SessionID,
 		SessionTitle: receiver.Name,
 		Content:      msg.Content,
 		ContentType:  msg.ContentType,
