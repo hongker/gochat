@@ -22,11 +22,20 @@ type Handler struct {
 	total             int
 }
 
-func NewHandler() *Handler {
+type Options struct {
+	BucketQueueCount  uint64
+	BucketQueueSize   uint64
+	HeartbeatInterval time.Duration
+}
+
+func NewHandler(options Options) *Handler {
 	return &Handler{
-		bucket:            bucket.NewBucket(),
+		bucket: bucket.NewBucket(bucket.Options{
+			QueueCount: options.BucketQueueCount,
+			QueueSize:  options.BucketQueueSize,
+		}),
 		timers:            cmap.NewContainer[string, *time.Timer](),
-		heartbeatInterval: time.Second * 60,
+		heartbeatInterval: options.HeartbeatInterval,
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(),
 		channelApp:        application.NewChannelApplication(),

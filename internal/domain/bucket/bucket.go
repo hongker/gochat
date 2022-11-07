@@ -64,7 +64,11 @@ func (bucket *Bucket) BroadcastChannel(channel *Channel, msg []byte) {
 		return
 	}
 	num := atomic.AddUint64(&bucket.workerNum, 1) % bucket.queueCount
-	bucket.queues[num] <- QueueItem{Channel: channel, Msg: msg}
+	select {
+	case bucket.queues[num] <- QueueItem{Channel: channel, Msg: msg}:
+	default:
+	}
+
 }
 
 func (bucket *Bucket) Stop() {
@@ -99,14 +103,19 @@ func (bucket *Bucket) polling(done <-chan struct{}, queue chan QueueItem) {
 
 }
 
-func NewBucket() *Bucket {
+func NewBucket(options Options) *Bucket {
 	bucket := &Bucket{
 		channels:   cmap.NewContainer[string, *Channel](),
 		Room:       NewRoom(),
-		queues:     make([]chan QueueItem, 32),
-		queueSize:  1024,
-		queueCount: 32,
+		queues:     make([]chan QueueItem, options.QueueCount),
+		queueSize:  options.QueueSize,
+		queueCount: options.QueueCount,
 	}
 	bucket.start()
 	return bucket
+}
+
+type Options struct {
+	QueueCount uint64
+	QueueSize  uint64
 }

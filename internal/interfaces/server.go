@@ -36,7 +36,7 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 		httpServer.Serve(httpContext.Done())
 	}()
 
-	handler := socket.NewHandler()
+	handler := socket.NewHandler(server.config.SocketOptions)
 	instance := znet.New(func(options *znet.Options) {
 		options.OnConnect = handler.OnConnect
 		options.OnDisconnect = handler.OnDisconnect

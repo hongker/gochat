@@ -7,7 +7,10 @@ import (
 )
 
 func TestBucket(t *testing.T) {
-	bucket := NewBucket()
+	bucket := NewBucket(Options{
+		QueueCount: 32,
+		QueueSize:  100,
+	})
 	session1 := NewSession("1001", nil)
 	bucket.AddSession(session1)
 

@@ -1991,7 +1991,7 @@ export default {
       },
 
       lockReconnect: false,
-      timeout: 60 * 1000, //10秒一次心跳
+      timeout: 30 * 1000, //30秒一次心跳
       timeoutObj: null, //心跳心跳倒计时
       serverTimeoutObj: null, //心跳倒计时
       timeoutnum: null, //断开 重连倒计时
