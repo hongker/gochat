@@ -4,40 +4,31 @@ import (
 	"context"
 	"github.com/ebar-go/ego/errors"
 	"gochat/internal/domain/dto"
+	"gochat/internal/domain/types"
 	"gochat/pkg/cmap"
-	"gochat/pkg/gen"
+	"gochat/pkg/uuid"
 	"time"
 )
 
 type UserApplication struct {
-	collection *cmap.Container[string, *User]
-	generator  gen.IDGenerator
+	collection *cmap.Container[string, *types.User]
+	generator  uuid.IDGenerator
 	contacts   *cmap.Container[string, []string]
 }
 
-var userCollection = cmap.NewContainer[string, *User]()
+var userCollection = cmap.NewContainer[string, *types.User]()
 var contacts = cmap.NewContainer[string, []string]()
 
 func NewUserApplication() *UserApplication {
 	return &UserApplication{
 		collection: userCollection,
-		generator:  gen.NewSnowFlakeGenerator(),
+		generator:  uuid.NewSnowFlakeGenerator(),
 		contacts:   contacts,
 	}
 }
 
-type User struct {
-	ID        string
-	Name      string
-	Avatar    string
-	Email     string
-	Location  string
-	Status    string
-	CreatedAt int64
-}
-
 // Auth represents user authentication
-func (app *UserApplication) Auth(ctx context.Context, user *User) error {
+func (app *UserApplication) Auth(ctx context.Context, user *types.User) error {
 	user.ID = app.generator.Generate()
 	user.CreatedAt = time.Now().Unix()
 
@@ -45,18 +36,17 @@ func (app *UserApplication) Auth(ctx context.Context, user *User) error {
 	return nil
 }
 
-func (app *UserApplication) FindByEmail(ctx context.Context, email string) (*User) {
-	var user *User
-	app.collection.Iterator(func(key string, val *User) {
+func (app *UserApplication) FindByEmail(ctx context.Context, email string) (user *types.User) {
+	app.collection.Iterator(func(key string, val *types.User) {
 		if val.Email == email {
 			user = val
 		}
 	})
 
-	return user
+	return
 }
 
-func (app *UserApplication) Get(ctx context.Context, uid string) (*User, error) {
+func (app *UserApplication) Get(ctx context.Context, uid string) (*types.User, error) {
 	user, exist := app.collection.Get(uid)
 	if !exist {
 		return nil, errors.NotFound("user not found: %s", uid)
@@ -79,8 +69,8 @@ func (app *UserApplication) Update(ctx context.Context, uid string, req *dto.Use
 	return nil
 }
 
-func (app *UserApplication) GetContacts(ctx context.Context, uid string) (items []*User, err error) {
-	items = make([]*User, 0, 64)
+func (app *UserApplication) GetContacts(ctx context.Context, uid string) (items []*types.User, err error) {
+	items = make([]*types.User, 0, 64)
 	ids, exist := app.contacts.Get(uid)
 	if !exist {
 		return

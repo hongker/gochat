@@ -1,4 +1,4 @@
-package gen
+package uuid
 
 import "github.com/bwmarrin/snowflake"
 

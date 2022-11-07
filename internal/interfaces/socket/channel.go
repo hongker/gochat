@@ -5,8 +5,8 @@ import (
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/api"
-	"gochat/internal/application"
 	"gochat/internal/domain/dto"
+	"gochat/internal/domain/types"
 	"time"
 )
 
@@ -53,7 +53,7 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroa
 		return
 	}
 
-	msg := &application.Message{
+	msg := &types.Message{
 		ID:          uuid.NewV4().String(),
 		Content:     req.Content,
 		ContentType: req.ContentType,

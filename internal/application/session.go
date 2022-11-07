@@ -3,32 +3,27 @@ package application
 import (
 	"context"
 	"fmt"
+	"gochat/internal/domain/types"
 	"gochat/pkg/cmap"
 )
 
 type SessionApplication struct {
-	collection *cmap.Container[string, []*Session]
+	collection *cmap.Container[string, []*types.Session]
 }
 
-type Session struct {
-	ID    string
-	Title string
-	Last  *Message
-}
-
-func (app *SessionApplication) GetSessionList(ctx context.Context, uid string) ([]*Session, error) {
+func (app *SessionApplication) GetUserSessionList(ctx context.Context, uid string) ([]*types.Session, error) {
 	items, _ := app.collection.Get(uid)
 	return items, nil
 }
 
-func (app *SessionApplication) BuildSessionId(uid, targetId string) string {
+func (app *SessionApplication) BuildUserSessionId(uid, targetId string) string {
 	if uid > targetId {
 		return fmt.Sprintf("%s:%s", uid, targetId)
 	}
 	return fmt.Sprintf("%s:%s", targetId, uid)
 }
 
-func (app *SessionApplication) SaveSession(ctx context.Context, uid string, session *Session) (err error) {
+func (app *SessionApplication) SaveSession(ctx context.Context, uid string, session *types.Session) (err error) {
 	items, _ := app.collection.Get(uid)
 
 	var exist bool
@@ -51,6 +46,6 @@ func (app *SessionApplication) SaveSession(ctx context.Context, uid string, sess
 
 func NewSessionApplication() *SessionApplication {
 	return &SessionApplication{
-		collection: cmap.NewContainer[string, []*Session](),
+		collection: cmap.NewContainer[string, []*types.Session](),
 	}
 }

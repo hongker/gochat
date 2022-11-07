@@ -8,6 +8,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/application"
 	"gochat/internal/domain/dto"
+	"gochat/internal/domain/types"
 	"strings"
 )
 
@@ -53,7 +54,7 @@ func (handler *Handler) login(ctx context.Context, req *dto.LoginRequest) (resp 
 		}
 
 	} else {
-		user = &application.User{Name: req.Name, Email: req.Email}
+		user = &types.User{Name: req.Name, Email: req.Email}
 
 		err = handler.userApp.Auth(ctx, user)
 		if err != nil {

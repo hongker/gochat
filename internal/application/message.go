@@ -2,123 +2,50 @@ package application
 
 import (
 	"context"
-	"github.com/ebar-go/ego/errors"
-	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
-	"gochat/internal/bucket"
-	"gochat/internal/domain/constant"
-	"gochat/internal/domain/dto"
-	"sync"
+	"gochat/internal/domain/types"
+	"gochat/pkg/cmap"
 	"time"
 )
 
 type MessageApplication struct {
-	bucket   *bucket.Bucket
-	rmw      sync.RWMutex
-	messages map[string][]*Message
+	messages               *cmap.Container[string, []*types.Message]
+	maxSessionMessageCount int
 }
 
-type Message struct {
-	ID          string `json:"id"`
-	SessionID   string `json:"session_id"`
-	SessionType string `json:"session_type"`
-	Content     string `json:"content"`
-	ContentType string `json:"content_type"`
-	Target      string `json:"target"`
-	Sender      string `json:"sender"`
-	CreatedAt   int64  `json:"created_at"`
-}
-
-func (app *MessageApplication) Query(ctx context.Context, sessionID string) (items []*Message, err error) {
-	app.rmw.RLock()
-	items = app.messages[sessionID]
-	app.rmw.RUnlock()
+func (app *MessageApplication) Query(ctx context.Context, sessionID string) (items []*types.Message, err error) {
+	items, _ = app.messages.Get(sessionID)
 	return
 }
 
-func (app *MessageApplication) GetLast(ctx context.Context, sessionID string) (item *Message) {
-	app.rmw.RLock()
-	items := app.messages[sessionID]
-	app.rmw.RUnlock()
+func (app *MessageApplication) GetLast(ctx context.Context, sessionID string) (item *types.Message) {
+	items, _ := app.messages.Get(sessionID)
 	if len(items) > 0 {
 		item = items[len(items)-1]
 	}
 	return
 }
 
-func (app *MessageApplication) Send(ctx context.Context, sessionId string, sender, receiver *User, req *dto.MessageSendRequest, packet codec.Codec) (msg *Message, err error) {
-	receiverSession := app.bucket.GetSession(req.Target)
-	if receiverSession == nil {
-		err = errors.NotFound("receiver not found")
-		return
+func (app *MessageApplication) Save(sessionId string, msg *types.Message) {
+	if msg.ID == "" {
+		msg.ID = uuid.NewV4().String()
+		msg.CreatedAt = time.Now().UnixMilli()
 	}
-	senderSession := app.bucket.GetSession(sender.ID)
-	if senderSession == nil {
-		err = errors.NotFound("sender not found")
-		return
-	}
-
-	msg = &Message{
-		ID:          uuid.NewV4().String(),
-		SessionID:   sessionId,
-		SessionType: constant.SessionTypeUser,
-		Content:     req.Content,
-		ContentType: req.ContentType,
-		Target:      req.Target,
-		Sender:      sender.ID,
-		CreatedAt:   time.Now().UnixMilli(),
-	}
-
-	//app.Save(receiverSession.ID, msg)
-	app.Save(msg.SessionID, msg)
-
-	receiverBuf, err := packet.Pack(dto.Message{
-		ID:           msg.ID,
-		SessionID:    msg.SessionID,
-		SessionTitle: sender.Name,
-		Content:      msg.Content,
-		ContentType:  msg.ContentType,
-		CreatedAt:    msg.CreatedAt,
-		Sender:       dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
-	})
-	if err == nil {
-		receiverSession.Send(receiverBuf)
-	}
-
-	senderBuf, err := packet.Pack(dto.Message{
-		ID:           msg.ID,
-		SessionID:    msg.SessionID,
-		SessionTitle: receiver.Name,
-		Content:      msg.Content,
-		ContentType:  msg.ContentType,
-		CreatedAt:    msg.CreatedAt,
-		Sender:       dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
-	})
-	if err == nil {
-		senderSession.Send(senderBuf)
-	}
-
-	return
-}
-
-func (app *MessageApplication) Save(sessionId string, msg *Message) {
-	app.rmw.Lock()
-	defer app.rmw.Unlock()
-	items := app.messages[sessionId]
+	items, _ := app.messages.Get(sessionId)
 	if len(items) == 0 {
-		items = make([]*Message, 0, 100)
+		items = make([]*types.Message, 0, app.maxSessionMessageCount)
 	}
 	items = append(items, msg)
-	if total := len(items); total > 100 {
-		items = items[total-100 : total]
+	if total := len(items); total > app.maxSessionMessageCount {
+		items = items[total-app.maxSessionMessageCount : total]
 	}
-	app.messages[sessionId] = items
+	app.messages.Set(sessionId, items)
 
 }
 
-func NewMessageApplication(bucket *bucket.Bucket) *MessageApplication {
+func NewMessageApplication() *MessageApplication {
 	return &MessageApplication{
-		bucket:   bucket,
-		messages: map[string][]*Message{},
+		messages:               cmap.NewContainer[string, []*types.Message](),
+		maxSessionMessageCount: 100,
 	}
 }
