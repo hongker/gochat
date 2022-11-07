@@ -1,4 +1,4 @@
-package internal
+package interfaces
 
 import (
 	"context"
@@ -6,12 +6,14 @@ import (
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	"gochat/internal/bucket"
-	"gochat/internal/http"
-	"gochat/internal/socket"
+	"gochat/internal/interfaces/http"
+	"gochat/internal/interfaces/socket"
 	"log"
 )
 
-type Server struct{}
+type Server struct {
+	config *Config
+}
 
 func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	log.Println("server started")
@@ -21,13 +23,19 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	defer httpCancel()
 	go func() {
 		defer runtime.HandleCrash()
-		ego.NewHTTPServer(":8080").
+		httpServer := ego.NewHTTPServer(":8080").
 			EnableReleaseMode().
 			EnableCorsMiddleware().
-			EnablePprofHandler().
-			EnableAvailableHealthCheck().
-			RegisterRouteLoader(http.NewHandler(b).Install).
-			Serve(httpContext.Done())
+			RegisterRouteLoader(http.NewHandler().Install)
+
+		if server.config.PprofEnable {
+			httpServer.EnablePprofHandler()
+		}
+
+		if server.config.HealthCheckEnable {
+			httpServer.EnableAvailableHealthCheck()
+		}
+		httpServer.Serve(httpContext.Done())
 	}()
 
 	handler := socket.NewHandler(b)

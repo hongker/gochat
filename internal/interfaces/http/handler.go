@@ -2,57 +2,25 @@ package http
 
 import (
 	"context"
-	"embed"
 	"github.com/ebar-go/ego/errors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/application"
-	"gochat/internal/bucket"
 	"gochat/internal/domain/dto"
-	"io/fs"
-	"log"
-	"net/http"
-	"path"
 	"strings"
 )
-
-var Static embed.FS
 
 type Handler struct {
 	userApp *application.UserApplication
 }
 
-func NewHandler(bucket *bucket.Bucket) *Handler {
+func NewHandler() *Handler {
 	return &Handler{
 		userApp: application.NewUserApplication(),
 	}
 }
 
-type serverFileSystemType struct {
-	http.FileSystem
-}
-
-func (f serverFileSystemType) Exists(prefix string, _path string) bool {
-	_, err := f.Open(path.Join(prefix, _path))
-	return err == nil
-}
-
-func mustFS(dir string) (serverFileSystem static.ServeFileSystem) {
-
-	sub, err := fs.Sub(Static, dir)
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	serverFileSystem = serverFileSystemType{
-		http.FS(sub),
-	}
-
-	return
-}
 func (handler *Handler) Install(router *gin.Engine) {
 	router.POST("/api/user/auth", convertAction[dto.LoginRequest, dto.LoginResponse](handler.login))
 	router.POST("/api/user/find", convertAction[dto.UserFindRequest, dto.UserResponse](handler.findUser))

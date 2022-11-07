@@ -19,8 +19,3 @@ const (
 const (
 	OperatePushMessage = 101
 )
-
-const (
-	SessionTypeUser  = "user"
-	SessionTypeGroup = "group"
-)

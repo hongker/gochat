@@ -6,6 +6,7 @@ import (
 	"github.com/ebar-go/znet/codec"
 	"gochat/api"
 	"gochat/internal/application"
+	"gochat/internal/domain/constant"
 	"gochat/internal/domain/dto"
 )
 
@@ -23,7 +24,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 		item := dto.Session{
 			ID:    session.ID,
 			Title: session.Title,
-			Type:  api.SessionTypeUser,
+			Type:  constant.SessionTypeUser,
 		}
 		if session.Last != nil {
 			item.Last = dto.Message{
@@ -42,7 +43,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 		item := dto.Session{
 			ID:    channel.ID,
 			Title: channel.Name,
-			Type:  api.SessionTypeGroup,
+			Type:  constant.SessionTypeGroup,
 		}
 		last := handler.messageApp.GetLast(ctx, item.ID)
 		if last != nil {

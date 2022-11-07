@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"gochat/cmd/server/options"
-	"gochat/internal/http"
+	"gochat/internal/interfaces/http"
 	"log"
 	"os"
 )

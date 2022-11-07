@@ -4,6 +4,7 @@ import (
 	"github.com/ebar-go/ego/utils/runtime/signal"
 	"github.com/urfave/cli/v2"
 	"gochat/internal"
+	"gochat/internal/interfaces"
 )
 
 // NewCommand returns a new instance of *cli.App
@@ -30,7 +31,7 @@ func run(opts *ServerRunOptions) error {
 		return err
 	}
 
-	config := internal.DefaultConfig()
+	config := interfaces.DefaultConfig()
 	opts.applyTo(config)
 
 	return config.New().Run(signal.SetupSignalHandler())

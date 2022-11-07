@@ -5,8 +5,8 @@ import (
 	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
-	"gochat/api"
 	"gochat/internal/bucket"
+	"gochat/internal/domain/constant"
 	"gochat/internal/domain/dto"
 	"sync"
 	"time"
@@ -61,7 +61,7 @@ func (app *MessageApplication) Send(ctx context.Context, sessionId string, sende
 	msg = &Message{
 		ID:          uuid.NewV4().String(),
 		SessionID:   sessionId,
-		SessionType: api.SessionTypeUser,
+		SessionType: constant.SessionTypeUser,
 		Content:     req.Content,
 		ContentType: req.ContentType,
 		Target:      req.Target,
