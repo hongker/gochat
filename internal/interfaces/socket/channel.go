@@ -1,13 +1,12 @@
 package socket
 
 import (
+	"github.com/ebar-go/ego/errors"
 	"github.com/ebar-go/znet"
 	"github.com/ebar-go/znet/codec"
-	uuid "github.com/satori/go.uuid"
 	"gochat/api"
 	"gochat/internal/domain/dto"
 	"gochat/internal/domain/types"
-	"time"
 )
 
 func (handler *Handler) listChannel(ctx *znet.Context, req *dto.ChannelQueryRequest) (resp *dto.ChannelQueryResponse, err error) {
@@ -28,19 +27,39 @@ func (handler *Handler) createChannel(ctx *znet.Context, req *dto.ChannelCreateR
 	if err != nil {
 		return
 	}
+
+	c := handler.bucket.AddChannel(channel.ID)
+	handler.bucket.SubscribeChannel(c, handler.bucket.GetSession(uid))
+
 	resp = &dto.ChannelCreateResponse{ID: channel.ID}
-	handler.channelApp.Join(ctx, channel.ID, req.Members...)
+	for _, id := range req.Members {
+		session := handler.bucket.GetSession(id)
+		if session != nil {
+			handler.bucket.SubscribeChannel(c, session)
+		}
+	}
 	return
 }
 
 func (handler *Handler) joinChannel(ctx *znet.Context, req *dto.ChannelJoinRequest) (resp *dto.ChannelJoinResponse, err error) {
 	uid := handler.currentUser(ctx)
-	err = handler.channelApp.Join(ctx, req.ID, uid)
+	channel := handler.bucket.GetChannel(req.ID)
+	if channel == nil {
+		err = errors.NotFound("channel not found")
+		return
+	}
+	handler.bucket.SubscribeChannel(channel, handler.bucket.GetSession(uid))
 	return
 }
 func (handler *Handler) leaveChannel(ctx *znet.Context, req *dto.ChannelLeaveRequest) (resp *dto.ChannelLeaveResponse, err error) {
 	uid := handler.currentUser(ctx)
-	err = handler.channelApp.Leave(ctx, req.ID, uid)
+	channel := handler.bucket.GetChannel(req.ID)
+	if channel == nil {
+		err = errors.NotFound("channel not found")
+		return
+	}
+
+	handler.bucket.UnsubscribeChannel(channel, handler.bucket.GetSession(uid))
 	return
 }
 
@@ -54,24 +73,33 @@ func (handler *Handler) broadcastChannel(ctx *znet.Context, req *dto.ChannelBroa
 	}
 
 	msg := &types.Message{
-		ID:          uuid.NewV4().String(),
 		Content:     req.Content,
 		ContentType: req.ContentType,
 		Target:      req.Target,
 		Sender:      uid,
-		CreatedAt:   time.Now().UnixMilli(),
 	}
 
 	handler.messageApp.Save(req.Target, msg)
 
-	err = handler.channelApp.Broadcast(ctx, dto.Message{
-		ID:          msg.ID,
-		SessionID:   msg.Target,
-		Content:     msg.Content,
-		ContentType: msg.ContentType,
-		CreatedAt:   msg.CreatedAt,
-		Sender:      dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
-	}, packet)
+	channel, err := handler.channelApp.Get(ctx, req.Target)
+	if err != nil {
+		return
+	}
+
+	buf, err := packet.Pack(dto.Message{
+		ID:           msg.ID,
+		SessionID:    msg.Target,
+		SessionTitle: channel.Name,
+		Content:      msg.Content,
+		ContentType:  msg.ContentType,
+		CreatedAt:    msg.CreatedAt,
+		Sender:       dto.User{ID: sender.ID, Name: sender.Name, Avatar: sender.Avatar},
+	})
+	if err != nil {
+		return
+	}
+
+	handler.bucket.BroadcastChannel(handler.bucket.GetChannel(req.Target), buf)
 
 	return
 }

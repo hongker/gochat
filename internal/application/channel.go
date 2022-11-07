@@ -3,15 +3,12 @@ package application
 import (
 	"context"
 	"github.com/ebar-go/ego/errors"
-	"github.com/ebar-go/znet/codec"
 	uuid "github.com/satori/go.uuid"
 	"gochat/internal/bucket"
-	"gochat/internal/domain/dto"
 	"gochat/pkg/cmap"
 )
 
 type ChannelApplication struct {
-	bucket     *bucket.Bucket
 	collection *cmap.Container[string, *Channel]
 }
 
@@ -29,8 +26,8 @@ func (app *ChannelApplication) List(ctx context.Context) []*Channel {
 	return items
 }
 
-func (app *ChannelApplication) GetJoined(ctx context.Context, uid string) []*Channel {
-	session := app.bucket.GetSession(uid)
+func (app *ChannelApplication) GetJoined(ctx context.Context, bucket *bucket.Bucket, uid string) []*Channel {
+	session := bucket.GetSession(uid)
 	if session == nil {
 		return nil
 	}
@@ -50,53 +47,19 @@ func (app *ChannelApplication) Create(ctx context.Context, uid, name string) (ch
 	id := uuid.NewV4().String()
 	channel = &Channel{ID: id, Name: name, Owner: uid}
 	app.collection.Set(id, channel)
-
-	app.bucket.SubscribeChannel(app.bucket.AddChannel(id), app.bucket.GetSession(uid))
-
 	return
 }
 
-func (app *ChannelApplication) Join(ctx context.Context, id string, memberIds ...string) (err error) {
-	channel := app.bucket.GetChannel(id)
-	if channel == nil {
-		return errors.NotFound("channel not found")
-	}
-	for _, memberId := range memberIds {
-		app.bucket.SubscribeChannel(channel, app.bucket.GetSession(memberId))
-	}
-
-	return
-}
-
-func (app *ChannelApplication) Leave(ctx context.Context, id string, uid string) (err error) {
-	channel := app.bucket.GetChannel(id)
-	if channel == nil {
-		return
-	}
-
-	app.bucket.UnsubscribeChannel(channel, app.bucket.GetSession(uid))
-	return
-}
-
-func (app *ChannelApplication) Broadcast(ctx context.Context, msg dto.Message, packet codec.Codec) (err error) {
-	channel, exist := app.collection.Get(msg.SessionID)
+func (app *ChannelApplication) Get(ctx context.Context, id string) (*Channel, error) {
+	channel, exist := app.collection.Get(id)
 	if !exist {
-		return errors.NotFound("channel not found")
+		return nil, errors.NotFound("channel not found")
 	}
-	msg.SessionTitle = channel.Name
-
-	buf, err := packet.Pack(msg)
-	if err != nil {
-		return
-	}
-
-	app.bucket.BroadcastChannel(app.bucket.GetChannel(msg.SessionID), buf)
-	return
+	return channel, nil
 }
 
-func NewChannelApplication(bucket *bucket.Bucket) *ChannelApplication {
+func NewChannelApplication() *ChannelApplication {
 	return &ChannelApplication{
-		bucket:     bucket,
 		collection: cmap.NewContainer[string, *Channel](),
 	}
 }

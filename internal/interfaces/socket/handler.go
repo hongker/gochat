@@ -29,7 +29,7 @@ func NewHandler(bucket *bucket.Bucket) *Handler {
 		heartbeatInterval: time.Second * 60,
 		sessionApp:        application.NewSessionApplication(),
 		messageApp:        application.NewMessageApplication(),
-		channelApp:        application.NewChannelApplication(bucket),
+		channelApp:        application.NewChannelApplication(),
 		userApp:           application.NewUserApplication(),
 	}
 }

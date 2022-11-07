@@ -38,7 +38,7 @@ func (handler *Handler) listSession(ctx *znet.Context, req *dto.SessionListReque
 	}
 
 	// group sessions
-	channels := handler.channelApp.GetJoined(ctx, uid)
+	channels := handler.channelApp.GetJoined(ctx, handler.bucket, uid)
 	for _, channel := range channels {
 		item := dto.Session{
 			ID:    channel.ID,

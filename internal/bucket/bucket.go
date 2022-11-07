@@ -57,6 +57,9 @@ func (bucket *Bucket) GetOrCreate(id string) *Channel {
 }
 
 func (bucket *Bucket) SubscribeChannel(channel *Channel, sessions ...*Session) {
+	if channel == nil {
+		return
+	}
 	for _, session := range sessions {
 		channel.AddSession(session)
 		session.Channels = append(session.Channels, channel.ID)
@@ -65,12 +68,18 @@ func (bucket *Bucket) SubscribeChannel(channel *Channel, sessions ...*Session) {
 }
 
 func (bucket *Bucket) UnsubscribeChannel(channel *Channel, sessions ...*Session) {
+	if channel == nil {
+		return
+	}
 	for _, session := range sessions {
 		channel.RemoveSession(session)
 	}
 }
 
 func (bucket *Bucket) BroadcastChannel(channel *Channel, msg []byte) {
+	if channel == nil {
+		return
+	}
 	num := atomic.AddUint64(&bucket.workerNum, 1) % bucket.queueCount
 	bucket.queues[num] <- QueueItem{Channel: channel, Msg: msg}
 }
