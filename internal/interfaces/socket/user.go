@@ -2,16 +2,23 @@ package socket
 
 import (
 	"github.com/ebar-go/znet"
-	"gochat/internal/bucket"
+	"gochat/internal/domain/bucket"
 	"gochat/internal/domain/dto"
 )
 
 // connect represents user connect action
 func (handler *Handler) connect(ctx *znet.Context, req *dto.ConnectRequest) (resp *dto.ConnectResponse, err error) {
-
+	// 登录后标记身份
 	handler.setCurrentUser(ctx, req.UID)
 
+	// 注入session
 	handler.bucket.AddSession(bucket.NewSession(req.UID, ctx.Conn()))
+
+	// 添加关闭连接的回调
+	ctx.Conn().AddBeforeCloseHook(func(conn *znet.Connection) {
+		handler.bucket.RemoveSession(handler.bucket.GetSession(req.UID))
+	})
+
 	resp = &dto.ConnectResponse{ID: ctx.Conn().ID()}
 
 	return

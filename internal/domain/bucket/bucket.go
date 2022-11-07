@@ -2,15 +2,15 @@ package bucket
 
 import (
 	"github.com/ebar-go/ego/utils/runtime"
+	"gochat/pkg/cmap"
 	"sync"
 	"sync/atomic"
 )
 
 // Bucket represents a bucket for all connections
 type Bucket struct {
-	rmu      sync.RWMutex
-	channels map[string]*Channel
 	*Room
+	channels *cmap.Container[string, *Channel]
 
 	once sync.Once
 	done chan struct{}
@@ -28,31 +28,14 @@ type QueueItem struct {
 
 func (bucket *Bucket) AddChannel(id string) *Channel {
 	channel := NewChannel(id)
-	bucket.rmw.Lock()
-	bucket.channels[id] = channel
-	bucket.rmw.Unlock()
+	bucket.channels.Set(id, channel)
 	return channel
 }
 func (bucket *Bucket) RemoveChannel(channel *Channel) {
-	bucket.rmw.Lock()
-	delete(bucket.channels, channel.ID)
-	bucket.rmw.Unlock()
+	bucket.channels.Del(channel.ID)
 }
 func (bucket *Bucket) GetChannel(id string) *Channel {
-	bucket.rmw.RLock()
-	channel := bucket.channels[id]
-	bucket.rmw.RUnlock()
-	return channel
-}
-
-func (bucket *Bucket) GetOrCreate(id string) *Channel {
-	bucket.rmw.Lock()
-	channel, exist := bucket.channels[id]
-	if !exist {
-		channel = NewChannel(id)
-		bucket.channels[id] = channel
-	}
-	bucket.rmw.Unlock()
+	channel, _ := bucket.channels.Get(id)
 	return channel
 }
 
@@ -118,7 +101,7 @@ func (bucket *Bucket) polling(done <-chan struct{}, queue chan QueueItem) {
 
 func NewBucket() *Bucket {
 	bucket := &Bucket{
-		channels:   make(map[string]*Channel),
+		channels:   cmap.NewContainer[string, *Channel](),
 		Room:       NewRoom(),
 		queues:     make([]chan QueueItem, 32),
 		queueSize:  1024,

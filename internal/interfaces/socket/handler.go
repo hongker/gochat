@@ -5,7 +5,7 @@ import (
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
 	"gochat/internal/application"
-	"gochat/internal/bucket"
+	"gochat/internal/domain/bucket"
 	"gochat/internal/domain/dto"
 	"gochat/pkg/cmap"
 	"time"
@@ -22,9 +22,9 @@ type Handler struct {
 	total             int
 }
 
-func NewHandler(bucket *bucket.Bucket) *Handler {
+func NewHandler() *Handler {
 	return &Handler{
-		bucket:            bucket,
+		bucket:            bucket.NewBucket(),
 		timers:            cmap.NewContainer[string, *time.Timer](),
 		heartbeatInterval: time.Second * 60,
 		sessionApp:        application.NewSessionApplication(),
@@ -37,6 +37,8 @@ func NewHandler(bucket *bucket.Bucket) *Handler {
 func (handler *Handler) OnConnect(conn *znet.Connection) {
 	handler.total++
 	component.Provider().Logger().Infof("[%s] connected:%s, total=%d", conn.ID(), conn.IP(), handler.total)
+
+	// 给每个客户端设置一个定时器，如果这段时间内没有发送心跳，则自动关闭连接
 	timer := time.NewTimer(handler.heartbeatInterval)
 	go func() {
 		defer runtime.HandleCrash()
@@ -50,13 +52,14 @@ func (handler *Handler) OnConnect(conn *znet.Connection) {
 func (handler *Handler) OnDisconnect(conn *znet.Connection) {
 	handler.total--
 	component.Provider().Logger().Infof("[%s] Disconnected:%s", conn.ID(), conn.IP())
+
+	// 清除定时器
 	timer, _ := handler.timers.Get(conn.ID())
 	if timer == nil {
 		return
 	}
 	timer.Stop()
 	handler.timers.Del(conn.ID())
-
 }
 
 func (handler *Handler) heartbeat(ctx *znet.Context, req *dto.HeartbeatRequest) (resp *dto.HeartbeatResponse, err error) {

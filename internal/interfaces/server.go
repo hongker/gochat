@@ -5,7 +5,6 @@ import (
 	"github.com/ebar-go/ego"
 	"github.com/ebar-go/ego/utils/runtime"
 	"github.com/ebar-go/znet"
-	"gochat/internal/bucket"
 	"gochat/internal/interfaces/http"
 	"gochat/internal/interfaces/socket"
 	"log"
@@ -17,7 +16,6 @@ type Server struct {
 
 func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 	log.Println("server started")
-	b := bucket.NewBucket()
 
 	httpContext, httpCancel := context.WithCancel(context.Background())
 	defer httpCancel()
@@ -38,7 +36,7 @@ func (server *Server) Run(stopCh <-chan struct{}) (err error) {
 		httpServer.Serve(httpContext.Done())
 	}()
 
-	handler := socket.NewHandler(b)
+	handler := socket.NewHandler()
 	instance := znet.New(func(options *znet.Options) {
 		options.OnConnect = handler.OnConnect
 		options.OnDisconnect = handler.OnDisconnect

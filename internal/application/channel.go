@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/ebar-go/ego/errors"
 	uuid "github.com/satori/go.uuid"
-	"gochat/internal/bucket"
+	"gochat/internal/domain/bucket"
 	"gochat/pkg/cmap"
 )
 

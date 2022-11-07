@@ -21,6 +21,7 @@ func (handler *Handler) listChannel(ctx *znet.Context, req *dto.ChannelQueryRequ
 	}
 	return
 }
+
 func (handler *Handler) createChannel(ctx *znet.Context, req *dto.ChannelCreateRequest) (resp *dto.ChannelCreateResponse, err error) {
 	uid := handler.currentUser(ctx)
 	channel, err := handler.channelApp.Create(ctx, uid, req.Name)
@@ -51,6 +52,7 @@ func (handler *Handler) joinChannel(ctx *znet.Context, req *dto.ChannelJoinReque
 	handler.bucket.SubscribeChannel(channel, handler.bucket.GetSession(uid))
 	return
 }
+
 func (handler *Handler) leaveChannel(ctx *znet.Context, req *dto.ChannelLeaveRequest) (resp *dto.ChannelLeaveResponse, err error) {
 	uid := handler.currentUser(ctx)
 	channel := handler.bucket.GetChannel(req.ID)
